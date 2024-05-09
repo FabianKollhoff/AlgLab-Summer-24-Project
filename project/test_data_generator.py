@@ -10,11 +10,39 @@ import random
 
 class Generator():
 
-    def generateProjects(self, number_projects):
-        return {str(i) : Project(name = str(i), capacity = random.randint(8, 16)) for i in range(number_projects)}
+    def randomStudentRankingProject(self):
+        rating = random.random()
+        distribution = (0.2,0.1,0.4,0.1)
+        if rating <= distribution[0]:
+            return 5
+        if rating <= distribution[0] + distribution[1]:
+            return 4
+        if rating <= distribution[0] + distribution[1]+ distribution[2]:
+            return 3
+        if rating <= distribution[0] + distribution[1] + distribution[2] + distribution[3]:
+            return 2
+        return 1
+    
+    def radomProjectCapacity(self):
+        capacity = random.randint(5, 16)
+        self.sumProjectsCapacity += capacity
+        return capacity
+
+    def generateProjects(self, number_projects, number_students):
+        projects = {str(i) : Project(name = str(i), capacity = random.randint(6, 14)) for i in range(number_projects)}
+        while self.sumProjectsCapacity < number_students:
+            for project in projects:
+                randomAdative = random.randint(1,6)
+                self.sumProjectsCapacity += randomAdative
+                projects[project].capacity += randomAdative
+                if self.sumProjectsCapacity > number_students:
+                    break
+        print(self.sumProjectsCapacity)
+        return projects
+
 
     def generateProjectsRatings(self):
-        return {project : random.randint(1, 5) for project in self.projects}
+        return {project : self.randomStudentRankingProject() for project in self.projects}
 
     def generateStudents(self, number_students):
         students = []
@@ -23,8 +51,9 @@ class Generator():
             students.append(student)
         return students
 
-    def generateInstance(self, number_projects, number_students):   
-        self.projects = self.generateProjects(number_projects=number_projects)
+    def generateInstance(self, number_projects, number_students): 
+        self.sumProjectsCapacity = 0  
+        self.projects = self.generateProjects(number_projects=number_projects, number_students=number_students)
         self.students = self.generateStudents(number_students=number_students)
         self.instance = Instance(
                 students=self.students,
@@ -46,5 +75,3 @@ for instance_size in instance_sizes:
     with open(f"instances/data_s{number_students}_g{number_projects}.json") as f:
         test = f.read()
         instance: Instance = Instance.model_validate_json(test)
-
-    print(instance)
