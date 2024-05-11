@@ -16,3 +16,7 @@ class Student(BaseModel):
 class Instance(BaseModel):
     students: List[Student]
     projects: Dict[str, Project]
+
+
+class Solution(BaseModel):
+    projects: Dict[str, List[Student]]
