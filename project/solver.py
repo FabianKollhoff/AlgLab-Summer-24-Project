@@ -12,7 +12,7 @@ class SepSolver():
         self._model = gp.Model()
 
 
-        #x_(student, project) checks whether students is in project
+        #x_(student, project) checks whether student is in project
         self.student_project_selection = {
             (student.matr_number, project):{"var": self._model.addVar(vtype=gp.GRB.BINARY, name=f"x_{student.matr_number}_{project}"),
                                             "rating": student.projects_ratings[project]
