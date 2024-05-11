@@ -23,13 +23,13 @@ class Generator():
             return 2
         return 1
     
-    def radomProjectCapacity(self):
+    def randomProjectCapacity(self):
         capacity = random.randint(5, 16)
         self.sumProjectsCapacity += capacity
         return capacity
 
     def generateProjects(self, number_projects, number_students):
-        projects = {str(i) : Project(name = str(i), capacity = random.randint(6, 14)) for i in range(number_projects)}
+        projects = {str(i) : Project(name = str(i), capacity = self.randomProjectCapacity()) for i in range(number_projects)}
         while self.sumProjectsCapacity < number_students:
             for project in projects:
                 randomAdative = random.randint(1,6)
