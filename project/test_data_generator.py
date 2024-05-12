@@ -1,11 +1,7 @@
-from pydantic import BaseModel
-from typing import Dict, List
-
 from data_schema import Project, Student, Instance
 import json
 
 import random
-
 
 
 class Generator():
@@ -22,14 +18,14 @@ class Generator():
         if rating <= distribution[0] + distribution[1] + distribution[2] + distribution[3]:
             return 2
         return 1
-    
+
     def randomProjectCapacity(self):
         capacity = random.randint(5, 16)
         self.sumProjectsCapacity += capacity
         return capacity
 
     def generateProjects(self, number_projects, number_students):
-        projects = {str(i) : Project(name = str(i), capacity = self.randomProjectCapacity()) for i in range(number_projects)}
+        projects = {i : Project(id=i, name=str(i), capacity=self.randomProjectCapacity()) for i in range(number_projects)}
         while self.sumProjectsCapacity < number_students:
             for project in projects:
                 randomAdative = random.randint(1,6)
@@ -51,8 +47,8 @@ class Generator():
             students.append(student)
         return students
 
-    def generateInstance(self, number_projects, number_students): 
-        self.sumProjectsCapacity = 0  
+    def generateInstance(self, number_projects, number_students):
+        self.sumProjectsCapacity = 0
         self.projects = self.generateProjects(number_projects=number_projects, number_students=number_students)
         self.students = self.generateStudents(number_students=number_students)
         self.instance = Instance(
@@ -75,3 +71,5 @@ for instance_size in instance_sizes:
     with open(f"instances/data_s{number_students}_g{number_projects}.json") as f:
         test = f.read()
         instance: Instance = Instance.model_validate_json(test)
+        assert(len(instance.projects) == number_projects)
+        assert(len(instance.students) == number_students)
