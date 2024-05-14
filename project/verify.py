@@ -11,6 +11,9 @@ def solve_sep_instance(filepath: str):
 
     CHECK(solution is not None, "The returned solution must not be 'None'!")
 
+    #check every project is <= capacity
+    for project in solution.projects:
+        CHECK(len(solution.projects[project]) <= instance.projects[project].capacity, f"Too many students in project: {project}!")
     #check if every student is contained in exactly one project 
     for student_instance in instance.students:
         count_student_in_solution = 0
