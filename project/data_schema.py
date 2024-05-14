@@ -1,12 +1,19 @@
 from pydantic import BaseModel, field_validator, model_validator
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 class Project(BaseModel):
     id: int
     name : str
     capacity : int
-    #min_capacity: int TODO: check if min_capacity <= capacity
+    min_capacity: int #TODO: check if min_capacity <= capacity
     #veto: List[Student]
+    def __init__(self, id : int, name : str, capacities : Tuple[int, int]) -> None:
+        print(capacities)
+        self.capacity = capacities[0]
+        self.min_capacity = capacities[1]
+        self.id = id
+        self.name = name
+
 
     @field_validator("id")
     @classmethod
@@ -20,6 +27,13 @@ class Project(BaseModel):
     def check_max_capacity(cls, v: int) -> int:
         if v < 5:
             raise ValueError('Maximum project capacity is too small.')
+        return v
+    
+    @field_validator("min_capacity")
+    @classmethod
+    def check_min_capacity(cls, v: int) -> int:
+        if v < 5:
+            raise ValueError('Minimum project capacity is too small.')
         return v
 
 
