@@ -63,6 +63,7 @@ class Instance(BaseModel):
                 if project_id not in self.projects:
                     raise ValueError(f"Invalid project ID {project_id} in student's project ratings.")
         return self
+        
 
 class Solution(BaseModel):
     projects: Dict[int, List[Student]]

@@ -3,7 +3,6 @@ import json
 
 import random
 
-
 class Generator():
 
     def randomStudentRankingProject(self):
