@@ -7,13 +7,6 @@ class Project(BaseModel):
     capacity : int
     min_capacity: int #TODO: check if min_capacity <= capacity
     #veto: List[Student]
-    def __init__(self, id : int, name : str, capacities : Tuple[int, int]) -> None:
-        print(capacities)
-        self.capacity = capacities[0]
-        self.min_capacity = capacities[1]
-        self.id = id
-        self.name = name
-
 
     @field_validator("id")
     @classmethod
