@@ -5,7 +5,7 @@ class Project(BaseModel):
     id: int
     name : str
     capacity : int
-    min_capacity: int #TODO: check if min_capacity <= capacity
+    min_capacity: int
     #veto: List[Student]
 
     @field_validator("id")
@@ -28,6 +28,12 @@ class Project(BaseModel):
         if v < 5:
             raise ValueError('Minimum project capacity is too small.')
         return v
+    
+    @model_validator(mode="after")
+    def check_capacities(self):
+        if self.min_capacity > self.capacity:
+            raise ValueError(f"The minimum capacity {self.min_capacity} is bigger than the maximum capacity {self.capacity}.")
+        return self
 
 
 class Student(BaseModel):
@@ -51,6 +57,7 @@ class Student(BaseModel):
             if rating < 1 or rating > 5:
                 raise ValueError('Project ratings must be between 1 and 5.')
         return v
+    
 
 class Instance(BaseModel):
     students: List[Student]
@@ -69,6 +76,14 @@ class Instance(BaseModel):
             for project_id in student.projects_ratings:
                 if project_id not in self.projects:
                     raise ValueError(f"Invalid project ID {project_id} in student's project ratings.")
+        return self
+    
+    @model_validator(mode="after")
+    def check_number_of_students(self):
+        number_of_students = len(self.students)
+        sum_capacity = sum(project.capacity for project in self.projects.values())
+        if number_of_students > sum(project.capacity for project in self.projects.values()):
+            raise ValueError(f"The number of students {number_of_students} exceeds the sum of all project capacities {sum_capacity}!")
         return self
         
 
