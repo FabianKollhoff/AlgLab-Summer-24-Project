@@ -47,7 +47,6 @@ class SepSolver():
         for student in self.students:
             self._model.addConstr(sum([self._project_vars.var_student_in_project(student.matr_number, project) for project in self.projects]) == 1)
 
-
         #enforce that every project has only a limit amount of students participating
         for project in self.projects:
             self._model.addConstr(sum([self._project_vars.var_student_in_project(student.matr_number, project) for student in self.students]) 
