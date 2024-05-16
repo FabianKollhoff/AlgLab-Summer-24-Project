@@ -23,10 +23,15 @@ class Generator():
         self.sumProjectsCapacity += capacity
         min_capacity = random.randint(5, capacity)
         return (capacity, min_capacity)
+    
+    #maybe skill requirement better ?
+    def genererateProgrammingRequirements(self):
+        programming_requirements = {"Python":random.randint(0,3), "Java":random.randint(0,3), "C/C++":random.randint(0,3), "PHP":random.randint(0,3), "SQL":random.randint(0,3)}
+        return programming_requirements
 
     def generateProject(self, i):
         capacity, min_capacity = self.randomProjectCapacity()
-        return Project(id=i, name=str(i), capacity=capacity, min_capacity=min_capacity)
+        return Project(id=i, name=str(i), capacity=capacity, min_capacity=min_capacity, programming_requirements=self.genererateProgrammingRequirements())
 
     def generateProjects(self, number_projects, number_students):
         projects = {i : self.generateProject(i) for i in range(number_projects)}
@@ -40,14 +45,16 @@ class Generator():
         print(self.sumProjectsCapacity)
         return projects
 
-
     def generateProjectsRatings(self):
         return {project : self.randomStudentRankingProject() for project in self.projects}
+    
+    def generateProgrammingLanguageRatings(self):
+        return {"Python":random.randint(0,4), "Java":random.randint(0,4), "C/C++":random.randint(0,1), "PHP":random.randint(0,1), "SQL":random.randint(0,1)}
 
     def generateStudents(self, number_students):
         students = []
         for i in range(number_students):
-            student = Student(last_name="Doe", first_name="Joe", matr_number=i, projects_ratings=self.generateProjectsRatings())
+            student = Student(last_name="Doe", first_name="Joe", matr_number=i, projects_ratings=self.generateProjectsRatings(), programming_language_ratings=self.generateProgrammingLanguageRatings())
             students.append(student)
         return students
 

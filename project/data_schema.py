@@ -1,12 +1,17 @@
 from pydantic import BaseModel, field_validator, model_validator
 from typing import Dict, List, Tuple
 
+#class Programming_Languages(BaseModel):
+#    programming_languages = Dict[str]
+
 class Project(BaseModel):
     id: int
     name : str
     capacity : int
     min_capacity: int
     #veto: List[Student]
+
+    programming_requirements : Dict[str, int]
 
     @field_validator("id")
     @classmethod
@@ -29,6 +34,11 @@ class Project(BaseModel):
             raise ValueError('Minimum project capacity is too small.')
         return v
     
+    #@field_validator("programming_requirements")
+    #@classmethod
+    #def check_max(cls, v: List[str, int]):
+    #    for programing_language in v:
+
     @model_validator(mode="after")
     def check_capacities(self):
         if self.min_capacity > self.capacity:
@@ -41,6 +51,7 @@ class Student(BaseModel):
     first_name: str
     matr_number: int
     projects_ratings: Dict[int, int]
+    programming_language_ratings : Dict[str, int]
     #friends: List[Student] TODO: check length with a validator
 
     @field_validator("matr_number")
