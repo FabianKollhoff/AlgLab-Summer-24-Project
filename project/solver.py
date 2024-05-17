@@ -70,18 +70,16 @@ class SepSolver():
 
         #programming skills soft constraint
         #every student is assigned at most one role in one project
-        for student in self.students:
-            self._model.addConstr(sum([self._project_vars.var_programming_language_student_in_project(programming_language, student.matr_number, project_id) for project_id in self.projects for programming_language in self.projects[project_id].programming_requirements 
-                                       if self._project_vars.var_programming_language_student_in_project(programming_language, student.matr_number, project_id) is not None]) <= 1)
+        #for student in self.students:
+        #    self._model.addConstr(sum([self._project_vars.var_programming_language_student_in_project(programming_language, student.matr_number, project_id) for project_id in self.projects for programming_language in self.projects[project_id].programming_requirements 
+        #                               if self._project_vars.var_programming_language_student_in_project(programming_language, student.matr_number, project_id) is not None]) <= 1)
 
-        #enforce that student is only assigned a role for a project he is in
+        #enforce that student is only assigned one for role for a project he is in
         for student in self.students:
             for project in self.projects:
-                for programming_language in self.projects[project_id].programming_requirements:
-                    if self._project_vars.var_programming_language_student_in_project(programming_language, student.matr_number, project_id) is not None:
-                        self._model.addConstr(self._project_vars.var_programming_language_student_in_project(programming_language, student.matr_number, project_id) <= self._project_vars.var_student_in_project(student.matr_number, project))
+                self._model.addConstr(sum([self._project_vars.var_programming_language_student_in_project(programming_language, student.matr_number, project_id) for programming_language in self.projects[project_id].programming_requirements if self._project_vars.var_programming_language_student_in_project(programming_language, student.matr_number, project_id) is not None]) <= self._project_vars.var_student_in_project(student.matr_number, project))
 
-        #enforce that only a maximum number of necessary are to be counted
+        #enforce that only tthe necessary number of students are to be counted
         for project in self.projects:
             for programming_language in self.projects[project_id].programming_requirements:
                 self._model.addConstr(sum([self._project_vars.var_programming_language_student_in_project(programming_language, student.matr_number, project_id) for student in self.students if self._project_vars.var_programming_language_student_in_project(programming_language, student.matr_number, project_id) is not None ]) <= self.projects[project_id].programming_requirements[programming_language])
