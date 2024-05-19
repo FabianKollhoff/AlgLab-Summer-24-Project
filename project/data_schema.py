@@ -1,16 +1,40 @@
 from pydantic import BaseModel, field_validator, model_validator
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 #class Programming_Languages(BaseModel):
 #    programming_languages = Dict[str]
+
+
+class Student(BaseModel):
+    last_name: str
+    first_name: str
+    matr_number: int
+    projects_ratings: Dict[int, int]
+    programming_language_ratings : Dict[str, int]
+    #friends: List[Student] TODO: check length with a validator
+
+    @field_validator("matr_number")
+    @classmethod
+    def matr_number_is_non_negative(cls, v: int) -> int:
+        if v < 0:
+            raise ValueError('Matriculation number must be non-negative.')
+        return v
+
+    @field_validator("projects_ratings")
+    @classmethod
+    def check_ratings(cls, v) -> Dict[int, int]:
+        for rating in v.values():
+            if rating < 1 or rating > 5:
+                raise ValueError('Project ratings must be between 1 and 5.')
+        return v
+    
 
 class Project(BaseModel):
     id: int
     name : str
     capacity : int
     min_capacity: int
-    #veto: List[Student]
-
+    veto: List[Student]
     programming_requirements : Dict[str, int]
 
     @field_validator("id")
@@ -44,30 +68,6 @@ class Project(BaseModel):
         if self.min_capacity > self.capacity:
             raise ValueError(f"The minimum capacity {self.min_capacity} is bigger than the maximum capacity {self.capacity}.")
         return self
-
-
-class Student(BaseModel):
-    last_name: str
-    first_name: str
-    matr_number: int
-    projects_ratings: Dict[int, int]
-    programming_language_ratings : Dict[str, int]
-    #friends: List[Student] TODO: check length with a validator
-
-    @field_validator("matr_number")
-    @classmethod
-    def matr_number_is_non_negative(cls, v: int) -> int:
-        if v < 0:
-            raise ValueError('Matriculation number must be non-negative.')
-        return v
-
-    @field_validator("projects_ratings")
-    @classmethod
-    def check_ratings(cls, v) -> Dict[int, int]:
-        for rating in v.values():
-            if rating < 1 or rating > 5:
-                raise ValueError('Project ratings must be between 1 and 5.')
-        return v
     
 
 class Instance(BaseModel):
@@ -96,7 +96,15 @@ class Instance(BaseModel):
         if number_of_students > sum(project.capacity for project in self.projects.values()):
             raise ValueError(f"The number of students {number_of_students} exceeds the sum of all project capacities {sum_capacity}!")
         return self
+    
+    @model_validator(mode="after")
+    def check_vetos(self):
+        for project in self.projects.values():
+            for prohibited_student in project.veto:
+                if prohibited_student not in self.students:
+                    raise ValueError(f"Student with matriculation number {prohibited_student.matr_number} does not exist.")
+        return self
+    
         
-
 class Solution(BaseModel):
     projects: Dict[int, List[Student]]

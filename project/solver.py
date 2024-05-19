@@ -79,11 +79,15 @@ class SepSolver():
             for project in self.projects:
                 self._model.addConstr(sum([self._project_vars.var_programming_language_student_in_project(programming_language, student.matr_number, project_id) for programming_language in self.projects[project_id].programming_requirements if self._project_vars.var_programming_language_student_in_project(programming_language, student.matr_number, project_id) is not None]) <= self._project_vars.var_student_in_project(student.matr_number, project))
 
-        #enforce that only tthe necessary number of students are to be counted
+        #enforce that only the necessary number of students are to be counted
         for project in self.projects:
             for programming_language in self.projects[project_id].programming_requirements:
                 self._model.addConstr(sum([self._project_vars.var_programming_language_student_in_project(programming_language, student.matr_number, project_id) for student in self.students if self._project_vars.var_programming_language_student_in_project(programming_language, student.matr_number, project_id) is not None ]) <= self.projects[project_id].programming_requirements[programming_language])
 
+        #enforce project vetos
+        for project in self.projects:
+            self._model.addConstr(sum([self._project_vars.var_student_in_project(student.matr_number, project) for student in self.projects[project].veto]) == 0)
+        
         #set objective
         self._model.setObjective(sum([self._project_vars.var_student_in_project(student.matr_number, project) * self._project_vars.rating_student_in_project(student.matr_number, project) for project in self.projects for student in self.students]) + 
                                      sum([var_programming_language_student_in_project for _,var_programming_language_student_in_project in self._project_vars.vars_programming_language_student_in_project.items()]), gp.GRB.MAXIMIZE)

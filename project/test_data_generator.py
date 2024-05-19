@@ -1,6 +1,6 @@
 from data_schema import Project, Student, Instance
-import json
 
+import math
 import random
 
 class Generator():
@@ -31,7 +31,7 @@ class Generator():
 
     def generateProject(self, i):
         capacity, min_capacity = self.randomProjectCapacity()
-        return Project(id=i, name=str(i), capacity=capacity, min_capacity=min_capacity, programming_requirements=self.genererateProgrammingRequirements())
+        return Project(id=i, name=str(i), capacity=capacity, min_capacity=min_capacity, veto=self.generateVetos(), programming_requirements=self.genererateProgrammingRequirements())
 
     def generateProjects(self, number_projects, number_students):
         projects = {i : self.generateProject(i) for i in range(number_projects)}
@@ -54,14 +54,23 @@ class Generator():
     def generateStudents(self, number_students):
         students = []
         for i in range(number_students):
-            student = Student(last_name="Doe", first_name="Joe", matr_number=i, projects_ratings=self.generateProjectsRatings(), programming_language_ratings=self.generateProgrammingLanguageRatings())
+            student = Student(last_name="Doe", first_name="Joe", matr_number=i, projects_ratings={}, programming_language_ratings=self.generateProgrammingLanguageRatings())
             students.append(student)
         return students
+    
+    def generateVetos(self):
+        prohibited_students = []
+        score = random.random()
+        if score <= 0.1:
+            prohibited_students = random.sample(self.students, math.ceil(math.log10(len(self.students))) + 1)
+        return prohibited_students
 
     def generateInstance(self, number_projects, number_students):
         self.sumProjectsCapacity = 0
-        self.projects = self.generateProjects(number_projects=number_projects, number_students=number_students)
         self.students = self.generateStudents(number_students=number_students)
+        self.projects = self.generateProjects(number_projects=number_projects, number_students=number_students)
+        for student in self.students:
+            student.projects_ratings = self.generateProjectsRatings()
         self.instance = Instance(
                 students=self.students,
                 projects=self.projects
