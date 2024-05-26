@@ -28,6 +28,7 @@ class Student(BaseModel):
     first_name: str
     matr_number: int
     projects_ratings: Dict[int, int]
+    skills_ratings: Dict[str, int]
     #friends: List[Student] TODO: check length with a validator
 
     @field_validator("matr_number")
