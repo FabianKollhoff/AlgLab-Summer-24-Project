@@ -1,4 +1,4 @@
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, field_validator, model_validator, Field
 from typing import Dict, List
 
 #class Programming_Languages(BaseModel):
@@ -6,7 +6,7 @@ from typing import Dict, List
 
 
 class Student(BaseModel):
-    last_name: str
+    last_name: str = Field(...,description="The last name of the student")
     first_name: str
     matr_number: int
     projects_ratings: Dict[int, int]
