@@ -71,7 +71,7 @@ class _ProgrammingVars():
         """
         Iterate over all variables.
         """
-        return iter(self.vars_programming_language_student_in_project.values())
+        return iter(self.vars_programming_language_student_in_project.items())
 
     def all_languages(self, student, project):
         for programming_language in project.programming_requirements:
@@ -103,7 +103,7 @@ class _StudentProjectConstraint():
     def _enforce_every_project_empty_or_has_minimum_number_students(self):
         for project in self._projects:
             self._model.addConstr(sum(self._studentProjectVars.all_students_with_project(project)) <= self._emptyProjectVars.x(project) * project.capacity)
-            self._model.addConstr(sum(self._studentProjectVars.all_students_with_project(project)) >= self._emptyProjectVars.x(project) *  project.min_capacity)
+            self._model.addConstr(sum(self._studentProjectVars.all_students_with_project(project)) >= self._emptyProjectVars.x(project) * project.min_capacity)
 
     def _enforce_vetos(self):
         #enforce project vetos
@@ -125,7 +125,7 @@ class _StudentProgrammingConstraint():
 
     def _enforce_maximum_number_roles_project_assigned(self):
         for project in self._projects:
-            for programming_language in self._projects[project.id].programming_requirements:
+            for programming_language in project.programming_requirements:
                 self._model.addConstr(sum(self._programmingVars.all_students(programming_language, project)) <= project.programming_requirements[programming_language])  
 
 class _RatingObjective():
@@ -140,13 +140,18 @@ class _RatingObjective():
                     for student in self._students])
     
 class _ProgrammingObjective():
-    def __init__(self, students, programmingVars):
+    def __init__(self, students, projects, programmingVars):
         self._students = students
+        self._projects = projects
         self._programmingVars = programmingVars
 
     def sum(self):
-        return sum([var for var in self._programmingVars])
-
+        to_sum = []
+        for student in self._students:
+            for project in self._projects:
+                for programming_language in project.programming_requirements:
+                    to_sum.append(self._programmingVars.x(programming_language,student,project) * student.programming_language_ratings[programming_language])
+        return sum(to_sum)
 
 class SepSolver():
 
@@ -172,11 +177,11 @@ class SepSolver():
         self._studentProgrammingConstraint._enforce_student_only_is_in_one_project_and_has_one_role()
         self._studentProgrammingConstraint._enforce_maximum_number_roles_project_assigned()
         
-        self._ratingObjective = _RatingObjective(self.students, self.projects, self._studentProjectVars)
-        self._programmingObjective = _ProgrammingObjective(self.students, self._programmingVars)
 
-        #set objective
-        self._model.setObjective(self._ratingObjective.sum() + self._programmingObjective.sum(), gp.GRB.MAXIMIZE)
+        self._ratingObjective = _RatingObjective(self.students, self.projects, self._studentProjectVars)
+        self._programmingObjective = _ProgrammingObjective(self.students, self.projects, self._programmingVars)
+
+        self._model.setObjective(self._ratingObjective.sum() + 0.3*self._programmingObjective.sum(), gp.GRB.MAXIMIZE)
 
     def solve(self) -> Solution:
         self._model.optimize()
