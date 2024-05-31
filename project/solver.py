@@ -83,6 +83,71 @@ class _ProgrammingVars():
             if self.x(programming_language, student, programming_language) is not None:
                 yield self.x(programming_language, student, project)
 
+#better name needed
+class _StudentProjectConstraint():
+    def __init__(self, students, projects, studentProjectVars, emptyProjectVars, model):
+        self._students = students
+        self._projects = projects
+        self._studentProjectVars = studentProjectVars
+        self._emptyProjectVars = emptyProjectVars
+        self._model = model
+
+    def _enforce_every_student_in_exactly_one_project(self):
+        for student in self._students:
+            self._model.addConstr(sum(self._studentProjectVars.all_projects_with_student(student)) == 1)
+
+    def _enforce_every_project_max_number_students(self):
+        for project in self._projects:
+            self._model.addConstr(sum(self._studentProjectVars.all_students_with_project(project)) <= project.capacity)
+
+    def _enforce_every_project_empty_or_has_minimum_number_students(self):
+        for project in self._projects:
+            self._model.addConstr(sum(self._studentProjectVars.all_students_with_project(project)) <= self._emptyProjectVars.x(project) * project.capacity)
+            self._model.addConstr(sum(self._studentProjectVars.all_students_with_project(project)) >= self._emptyProjectVars.x(project) *  project.min_capacity)
+
+    def _enforce_vetos(self):
+        #enforce project vetos
+        for project in self._projects:
+            self._model.addConstr(sum([self._studentProjectVars.x(student, project) for student in project.veto]) == 0)
+
+class _StudentProgrammingConstraint():
+    def __init__(self, students, projects, studentProjectVars, programmingVars, model):
+        self._students = students
+        self._projects = projects
+        self._studentProjectVars = studentProjectVars
+        self._programmingVars = programmingVars
+        self._model = model
+
+    def _enforce_student_only_is_in_one_project_and_has_one_role(self):
+        for student in self._students:
+            for project in self._projects:
+                self._model.addConstr(sum(self._programmingVars.all_languages(student, project)) <= self._studentProjectVars.x(student, project))
+
+    def _enforce_maximum_number_roles_project_assigned(self):
+        for project in self._projects:
+            for programming_language in self._projects[project.id].programming_requirements:
+                self._model.addConstr(sum(self._programmingVars.all_students(programming_language, project)) <= project.programming_requirements[programming_language])  
+
+class _RatingObjective():
+    def __init__(self, students, projects, studentProjectVars):
+        self._students = students
+        self._projects = projects
+        self._studentProjectVars = studentProjectVars
+
+    def sum(self):
+        return sum([self._studentProjectVars.x(student, project) * self._studentProjectVars.rating(student, project) 
+                    for project in self._projects 
+                    for student in self._students])
+    
+class _ProgrammingObjective():
+    def __init__(self, students, programmingVars):
+        self._students = students
+        self._programmingVars = programmingVars
+
+    def sum(self):
+        return sum([var for var in self._programmingVars])
+
+
 class SepSolver():
 
     def __init__(self, instance: Instance):
@@ -90,49 +155,28 @@ class SepSolver():
         self.projects = list(instance.projects.values())
     
         #calculate how good student matches project
-
         self._model = gp.Model()
 
         self._studentProjectVars = _StudentProjectVars(students=self.students, projects=self.projects, model=self._model)
         self._emptyProjectVars = _EmptyProjectVars(projects=self.projects, model=self._model)
         self._programmingVars = _ProgrammingVars(students=self.students, projects=self.projects, model=self._model)
 
-        #enforce that every student is in exactly one project
-        for student in self.students:
-            self._model.addConstr(sum(self._studentProjectVars.all_projects_with_student(student)) == 1)
-
-        #enforce that every project has only a limit amount of students participating
-        for project in self.projects:
-            self._model.addConstr(sum(self._studentProjectVars.all_students_with_project(project)) <= project.capacity)
+        self._studentProjectConstraint = _StudentProjectConstraint(self.students, self.projects, self._studentProjectVars, self._emptyProjectVars, self._model)
+        self._studentProgrammingConstraint = _StudentProgrammingConstraint(self.students, self.projects, self._studentProjectVars, self._programmingVars, self._model)
         
-        #enforce that every project is empty or has a mimum number of participants 
-        for project in self.projects:
-            self._model.addConstr(sum(self._studentProjectVars.all_students_with_project(project)) <= self._emptyProjectVars.x(project) * self.projects[project.id].capacity)
-            self._model.addConstr(sum(self._studentProjectVars.all_students_with_project(project)) >= self._emptyProjectVars.x(project) *  self.projects[project.id].min_capacity)
+        self._studentProjectConstraint._enforce_every_student_in_exactly_one_project()
+        self._studentProjectConstraint._enforce_every_project_max_number_students()
+        self._studentProjectConstraint._enforce_every_project_empty_or_has_minimum_number_students()
+        self._studentProjectConstraint._enforce_vetos()
 
-        #programming skills soft constraint
-        #every student is assigned at most one role in one project
-        #for student in self.students:
-        #    self._model.addConstr(sum([self._project_vars.var_programming_language_student_in_project(programming_language, student.matr_number, project_id) for project_id in self.projects for programming_language in self.projects[project_id].programming_requirements 
-        #                               if self._project_vars.var_programming_language_student_in_project(programming_language, student.matr_number, project_id) is not None]) <= 1)
-
-        #enforce that student is only assigned one for role for a project he is in
-        for student in self.students:
-            for project in self.projects:
-                self._model.addConstr(sum(self._programmingVars.all_languages(student, project)) <= self._studentProjectVars.x(student, project))
-
-        #enforce that only the necessary number of students is to be counted
-        for project in self.projects:
-            for programming_language in self.projects[project.id].programming_requirements:
-                self._model.addConstr(sum(self._programmingVars.all_students(programming_language, project)) <= project.programming_requirements[programming_language])
-
-        #enforce project vetos
-        for project in self.projects:
-            self._model.addConstr(sum([self._studentProjectVars.x(student, project) for student in project.veto]) == 0)
+        self._studentProgrammingConstraint._enforce_student_only_is_in_one_project_and_has_one_role()
+        self._studentProgrammingConstraint._enforce_maximum_number_roles_project_assigned()
         
+        self._ratingObjective = _RatingObjective(self.students, self.projects, self._studentProjectVars)
+        self._programmingObjective = _ProgrammingObjective(self.students, self._programmingVars)
+
         #set objective
-        self._model.setObjective(sum([self._studentProjectVars.x(student, project) * self._studentProjectVars.rating(student, project) for project in self.projects for student in self.students]) + 
-                                     sum([var for var in self._programmingVars]), gp.GRB.MAXIMIZE)
+        self._model.setObjective(self._ratingObjective.sum() + self._programmingObjective.sum(), gp.GRB.MAXIMIZE)
 
     def solve(self) -> Solution:
         self._model.optimize()
