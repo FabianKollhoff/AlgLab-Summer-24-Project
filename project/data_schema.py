@@ -13,6 +13,9 @@ class Student(BaseModel):
     programming_language_ratings : Dict[str, int]
     #friends: List[Student] TODO: check length with a validator
 
+    def __hash__(self) -> int:
+        return self.matr_number.__hash__()
+
     @field_validator("matr_number")
     @classmethod
     def matr_number_is_non_negative(cls, v: int) -> int:
@@ -36,6 +39,9 @@ class Project(BaseModel):
     min_capacity: int
     veto: List[Student]
     programming_requirements : Dict[str, int]
+
+    def __hash__(self) -> int:
+        return self.id.__hash__()
 
     @field_validator("id")
     @classmethod
