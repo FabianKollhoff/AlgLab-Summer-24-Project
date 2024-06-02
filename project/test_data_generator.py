@@ -84,7 +84,7 @@ instance_sizes = [(10,100),(20,200), (30, 300), (50,500), (100,1000)]
 
 for instance_size in instance_sizes:
     number_projects, number_students = instance_size
-    data = g.generateInstance(number_students = number_students,number_projects = number_projects).model_dump_json()
+    data = g.generateInstance(number_students = number_students,number_projects = number_projects).model_dump_json(indent=2)
     with open(f"instances/data_s{number_students}_g{number_projects}.json", 'w') as f:
         f.write(data)
 

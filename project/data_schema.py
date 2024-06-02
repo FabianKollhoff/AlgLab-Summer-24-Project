@@ -6,11 +6,11 @@ from typing import Dict, List
 
 
 class Student(BaseModel):
-    last_name: str = Field(...,description="The last name of the student")
-    first_name: str
-    matr_number: int
+    last_name: str = Field(description="The last name of the student", pattern=r"^[a-zA-Z]{2,}(?: [a-zA-Z]+)?$") # might need to allow special characters such as hyphens
+    first_name: str = Field(pattern=r"^[A-Z][a-zA-Z]{1,}$")
+    matr_number: int = Field
     projects_ratings: Dict[int, int]
-    programming_language_ratings : Dict[str, int]
+    programming_language_ratings: Dict[str, int]
     #friends: List[Student] TODO: check length with a validator
 
     def __hash__(self) -> int:
@@ -20,7 +20,9 @@ class Student(BaseModel):
     @classmethod
     def matr_number_is_non_negative(cls, v: int) -> int:
         if v < 0:
-            raise ValueError('Matriculation number must be non-negative.')
+            raise ValueError("The matriculation number must be non-negative.")
+        if v > 9999999:
+            raise ValueError("The matriculation number has at most 7 digits.")
         return v
 
     @field_validator("projects_ratings")
@@ -28,17 +30,17 @@ class Student(BaseModel):
     def check_ratings(cls, v) -> Dict[int, int]:
         for rating in v.values():
             if rating < 1 or rating > 5:
-                raise ValueError('Project ratings must be between 1 and 5.')
+                raise ValueError("Project ratings must be between 1 and 5.")
         return v
     
 
 class Project(BaseModel):
     id: int
-    name : str
-    capacity : int
+    name: str
+    capacity: int
     min_capacity: int
     veto: List[Student]
-    programming_requirements : Dict[str, int]
+    programming_requirements: Dict[str, int]
 
     def __hash__(self) -> int:
         return self.id.__hash__()
@@ -47,21 +49,21 @@ class Project(BaseModel):
     @classmethod
     def id_is_non_negative(cls, v: int) -> int:
         if v < 0:
-            raise ValueError('Project ID should be non-negative.')
+            raise ValueError("Project ID should be non-negative.")
         return v
 
     @field_validator("capacity")
     @classmethod
     def check_max_capacity(cls, v: int) -> int:
         if v < 5:
-            raise ValueError('Maximum project capacity is too small.')
+            raise ValueError("Maximum project capacity is too small.")
         return v
     
     @field_validator("min_capacity")
     @classmethod
     def check_min_capacity(cls, v: int) -> int:
         if v < 5:
-            raise ValueError('Minimum project capacity is too small.')
+            raise ValueError("Minimum project capacity is too small.")
         return v
     
     #@field_validator("programming_requirements")
@@ -81,6 +83,7 @@ class Instance(BaseModel):
     projects: Dict[int, Project]
 
     @field_validator("students")
+    @classmethod
     def validate_matr_number(cls, v) -> List[Student]:
         matr_numbers = [student.matr_number for student in v]
         if len(set(matr_numbers)) != len(matr_numbers):
