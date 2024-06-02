@@ -5,7 +5,7 @@ import gurobipy as gp
 from data_schema import Project, Student, Instance, Solution
 
 class _StudentProjectVars():
-    def __init__(self, students: List[Student], projects: List[Project], model: gp.Model):
+    def __init__(self, students: List[Student], projects: List[Project], model: gp.Model) -> None:
         self._students = students
         self._projects = projects
 
@@ -55,7 +55,7 @@ class _StudentProjectVars():
 
         
 class _EmptyProjectVars():
-    def __init__(self, projects: List[Project], model: gp.Model):
+    def __init__(self, projects: List[Project], model: gp.Model) -> None:
 
         #variable whether project is empty
         self.vars_project_empty = {
@@ -67,7 +67,7 @@ class _EmptyProjectVars():
 
 class _ProgrammingVars():
     
-    def __init__(self, students: List[Student], projects: List[Project], model: gp.Model):   
+    def __init__(self, students: List[Student], projects: List[Project], model: gp.Model) -> None:   
         self._students = students
         self._projects = projects
         self._model = model
@@ -123,7 +123,7 @@ class _ProgrammingVars():
         return list
 
 class _ProjectParticipationConstraint():
-    def __init__(self, students: List[Student], projects: List[Project], studentProjectVars, emptyProjectVars, model: gp.Model):
+    def __init__(self, students: List[Student], projects: List[Project], studentProjectVars: _StudentProjectVars, emptyProjectVars: _EmptyProjectVars, model: gp.Model):
         self._students = students
         self._projects = projects
         self._studentProjectVars = studentProjectVars
@@ -148,7 +148,7 @@ class _ProjectParticipationConstraint():
             self._model.addConstr(sum([self._studentProjectVars.x(student, project) for student in project.veto]) == 0)
 
 class _StudentProgrammingConstraint():
-    def __init__(self, students: List[Student], projects: List[Project], studentProjectVars, programmingVars, model: gp.Model):
+    def __init__(self, students: List[Student], projects: List[Project], studentProjectVars: _StudentProjectVars, programmingVars: _ProgrammingVars, model: gp.Model):
         self._students = students
         self._projects = projects
         self._studentProjectVars = studentProjectVars
@@ -167,7 +167,7 @@ class _StudentProgrammingConstraint():
                 self._model.addConstr(sum(self._programmingVars.all_students(programming_language, project)) <= project.programming_requirements[programming_language]))
 
 class _RatingObjective():
-    def __init__(self, students: List[Student], projects: List[Project], studentProjectVars):
+    def __init__(self, students: List[Student], projects: List[Project], studentProjectVars: _StudentProjectVars):
         self._students = students
         self._projects = projects
         self._studentProjectVars = studentProjectVars
@@ -178,7 +178,7 @@ class _RatingObjective():
             )
     
 class _ProgrammingObjective():
-    def __init__(self, students: List[Student], projects: List[Project], programmingVars):
+    def __init__(self, students: List[Student], projects: List[Project], programmingVars: _ProgrammingVars):
         self._students = students
         self._projects = projects
         self._programmingVars = programmingVars
