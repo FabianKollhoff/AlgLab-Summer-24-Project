@@ -8,7 +8,7 @@ from typing import Dict, List
 class Student(BaseModel):
     last_name: str = Field(description="The last name of the student", pattern=r"^[a-zA-Z]{2,}(?: [a-zA-Z]+)?$") # might need to allow special characters such as hyphens
     first_name: str = Field(pattern=r"^[A-Z][a-zA-Z]{1,}$")
-    matr_number: int = Field
+    matr_number: int
     projects_ratings: Dict[int, int]
     programming_language_ratings: Dict[str, int]
     #friends: List[Student] TODO: check length with a validator
