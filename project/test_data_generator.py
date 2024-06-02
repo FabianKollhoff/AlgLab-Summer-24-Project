@@ -1,7 +1,32 @@
+import json
+from typing import List
 from data_schema import Project, Student, Instance
 
 import math
 import random
+
+# needs fixing for the solver to work
+class ProjectDeleter:
+
+    @staticmethod
+    def delete_project(file_path: str, project_ids: List[int]) -> None:
+        #try:
+            with open(file_path, 'r') as f:
+                data = json.load(f)
+
+            for project_id in project_ids:
+                if data["projects"][str(project_id)]:
+                    for student in range(len(data["students"])):
+                        del data["students"][student]["projects_ratings"][str(project_id)]
+                    for veto in range(len(data["projects"][str(project_id)]["veto"])):
+                        del data["projects"][str(project_id)]["veto"][veto - 1]["projects_ratings"][str(project_id)]
+                    del data["projects"][str(project_id)]
+
+            with open(file_path, 'w') as f:
+                json.dump(data, f, indent=2)
+        #except:
+        #    print(f"Error while trying to delete projects {project_ids}")
+
 
 class Generator():
 
@@ -79,6 +104,7 @@ class Generator():
         return self.instance
 
 g = Generator()
+#deleter = ProjectDeleter()
 
 instance_sizes = [(10,100),(20,200), (30, 300), (50,500), (100,1000)]
 
@@ -93,3 +119,6 @@ for instance_size in instance_sizes:
         instance: Instance = Instance.model_validate_json(test)
         assert(len(instance.projects) == number_projects)
         assert(len(instance.students) == number_students)
+
+        #projects_to_be_deleted = [1]
+        #deleter.delete_project(f"instances/data_s{number_students}_g{number_projects}.json", projects_to_be_deleted)
