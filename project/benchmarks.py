@@ -12,7 +12,6 @@ class Benchmarks(BaseModel):
 
     def log(self):
         #logger = logging.getLogger('logger')
-        #ALTERNATIVE: store all the statistics as lists/dict and only log them on demand e.g. benchmarks.log_meadian_group_size() etc.
         
         #self.log_avg_util()
         
@@ -24,7 +23,7 @@ class Benchmarks(BaseModel):
 
         #self.log_agv_rating()
 
-        #self.log_rating_sums()
+        self.log_rating_sums()
         #TODO: log the number of partner requests that were fulfilled
 
         #TODO: log graph of friend relations that were (not) fulfilled
@@ -40,7 +39,8 @@ class Benchmarks(BaseModel):
     
         x = np.array(ratings)
         y = np.array(list(rating_sums.values()))
-        plt.bar(x,y)
+        barplot = plt.bar(x,y)
+        plt.bar_label(barplot, labels=y, label_type="edge")
         plt.title("Occurence of rating in solution")
         plt.show()
     
@@ -97,6 +97,8 @@ class Benchmarks(BaseModel):
 
     def log_friend_graph(self):
         graph = nx.Graph()
+        num_greens = 0
+        num_reds = 0
         #for each student in solution add friends as edges in graph
         for proj in self.solution.projects:
             for student in self.solution.projects[proj]:
@@ -105,13 +107,15 @@ class Benchmarks(BaseModel):
                     nums = [stu.matr_number for stu in self.solution.projects[proj]]
                     if friend in nums:
                         graph.add_edge(student.matr_number, friend, color="green")
+                        num_greens += 1
                     else:
                         graph.add_edge(student.matr_number, friend, color="red")
+                        num_reds += 1
 
         layout = nx.kamada_kawai_layout(graph)
         colors = [graph.edges[e]["color"] for e in graph.edges]
         nx.draw_networkx(graph, pos=layout,edge_color=colors, node_size=15, with_labels=False)
-        plt.title("Friend graph")
+        plt.title(f"Friend graph. G:{num_greens} R:{num_reds}")
         plt.show()
 
 

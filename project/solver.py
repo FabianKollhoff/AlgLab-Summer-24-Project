@@ -1,4 +1,5 @@
 from gurobipy import GRB
+from typing import List
 import gurobipy as gp
 
 from data_schema import Project, Student, Instance, Solution
@@ -24,6 +25,9 @@ class _ProjectVars():
             project_id: self._model.addVar(vtype=gp.GRB.BINARY, name=f"e_{project_id}") for project_id in projects
         }
 
+    #def x(self, student: Student, project_id: int) -> gp.Var:
+    #    return self.vars_student_in_project[(student, project_id)]["var"]
+
     def var_student_in_project(self, student_matr, project_id):
         return self.vars_student_in_project[(student_matr, project_id)]["var"] 
     
@@ -32,6 +36,26 @@ class _ProjectVars():
     
     def var_project_is_empty(self, project_id):
         return self.vars_project_empty[project_id]
+    
+class _FriendsObjective():
+    def __init__(self, students: List[Student], projects: List[Project], studentProjectVars: _ProjectVars):
+        self._students = students
+        self._projects = projects
+        self._studentProjectVars = studentProjectVars
+
+        self.relations = []
+        #here get a list of all friend relations as tuple (Student.matr_number,Student.matr_number). Make sure no duplicates are added
+        for student in self._students:
+            for friend in student.friends:
+                if (friend, student.matr_number) not in self.relations:
+                    self.relations.append((student.matr_number, friend))
+
+
+    def get(self):
+        #return sum of all friend relations
+        return sum(
+            self._studentProjectVars.var_student_in_project(stu_a, proj) * self._studentProjectVars.var_student_in_project(stu_b, proj)
+              for stu_a, stu_b in self.relations for proj in self._projects)
 
 class SepSolver():
 
@@ -59,6 +83,9 @@ class SepSolver():
             self._model.addConstr(sum([self._project_vars.var_student_in_project(student.matr_number, project_id) for student in self.students]) >= self.projects[project_id].min_capacity * self._project_vars.var_project_is_empty(project_id))
 
         #set objective
+        self._friendsObjective = _FriendsObjective(students=self.students, projects=self.projects, studentProjectVars=self._project_vars)
+
+        #self._model.setObjective(sum([self._project_vars.var_student_in_project(student.matr_number, project) * self._project_vars.rating_student_in_project(student.matr_number, project) for project in self.projects for student in self.students]) + self._friendsObjective.get(), gp.GRB.MAXIMIZE)
         self._model.setObjective(sum([self._project_vars.var_student_in_project(student.matr_number, project) * self._project_vars.rating_student_in_project(student.matr_number, project) for project in self.projects for student in self.students]), gp.GRB.MAXIMIZE)
 
     def solve(self) -> Solution:
