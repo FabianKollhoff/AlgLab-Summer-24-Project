@@ -1,5 +1,6 @@
 from data_schema import Project, Student, Instance
 import json
+import csv
 
 import random
 
@@ -19,22 +20,25 @@ class Generator():
             skills = (4, 2, 2, 3, 4)
         if rating <= distribution[0] + distribution[1]+ distribution[2]:
             # python bro
-            project_distribution = (0.1, 0.1, 0.1, 0,4)
+            project_distribution = (0.3, 0.1, 0.1, 0,4)
             skills = (2, 3, 3, 3, 4)
         if rating <= distribution[0] + distribution[1] + distribution[2] + distribution[3]:
             # web developer
-            project_distribution = (0.2, 0.2, 0.1, 0,4)
+            project_distribution = (0.3, 0.2, 0.1, 0,4)
             skills = (4, 3, 3, 2, 2)
         if rating > distribution[0] + distribution[1] + distribution[2] + distribution[3]:
             # got here by copying homework
-            project_distribution = (0.3, 0.2, 0.1, 0,1)
+            project_distribution = (0.4, 0.2, 0.1, 0,1)
             skills = (4, 4, 4, 4, 4)
         return project_distribution, skills
     
-    def randomStudentRankingProject(self):
+    def randomStudentRankingProject(self, project_id):
+        bonus = 0
+        if project_id == 1:
+            bonus = 0.5
         rating = random.random()
         project_distribution, skills = self.randomStudentType()
-        if rating <= project_distribution[0]:
+        if rating <= project_distribution[0] + bonus:
             return 5
         if rating <= project_distribution[0] + project_distribution[1]:
             return 4
@@ -64,15 +68,15 @@ class Generator():
 
 
     def generateProjectsRatings(self):
-        return {project : self.randomStudentRankingProject() for project in self.projects}
+        return {project : self.randomStudentRankingProject(project) for project in self.projects}
     
     def generateSkillRatings(self):
         data, skills = self.randomStudentType()
-        skill_dict = {"python": skills[0]}
-        skill_dict.update({"java": skills[1]})
-        skill_dict.update({"c_cpp": skills[2]})
-        skill_dict.update({"sql": skills[3]})
-        skill_dict.update({"php": skills[4]})
+        skill_dict = {"Python": skills[0]}
+        skill_dict.update({"Java": skills[1]})
+        skill_dict.update({"C++": skills[2]})
+        skill_dict.update({"SQL": skills[3]})
+        skill_dict.update({"PHP": skills[4]})
         return skill_dict
 
     def generateStudents(self, number_students):
@@ -92,6 +96,8 @@ class Generator():
             )
         
         return self.instance
+    
+                
 
 g = Generator()
 
