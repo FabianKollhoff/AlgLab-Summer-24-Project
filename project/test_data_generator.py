@@ -24,7 +24,6 @@ class Generator():
         min_capacity = random.randint(5, capacity)
         return (capacity, min_capacity)
     
-    #maybe skill requirement better ?
     def genererateProgrammingRequirements(self):
         programming_requirements = {"Python":random.randint(0,3), "Java":random.randint(0,3), "C/C++":random.randint(0,3), "PHP":random.randint(0,3), "SQL":random.randint(0,3)}
         return programming_requirements

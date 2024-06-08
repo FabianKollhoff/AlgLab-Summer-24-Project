@@ -1,29 +1,18 @@
-from pydantic import BaseModel, field_validator, model_validator, Field
+from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import Dict, List
-
-#class Programming_Languages(BaseModel):
-#    programming_languages = Dict[str]
 
 
 class Student(BaseModel):
     last_name: str = Field(description="The last name of the student", pattern=r"^[a-zA-Z]{2,}(?: [a-zA-Z]+)?$") # might need to allow special characters such as hyphens
     first_name: str = Field(pattern=r"^[A-Z][a-zA-Z]{1,}$")
-    matr_number: int
+    matr_number: int = Field(ge=0, le=9999999)
     projects_ratings: Dict[int, int]
     programming_language_ratings: Dict[str, int]
-    #friends: List[Student] TODO: check length with a validator
+    #friends: List[int]
 
     def __hash__(self) -> int:
         return self.matr_number.__hash__()
 
-    @field_validator("matr_number")
-    @classmethod
-    def matr_number_is_non_negative(cls, v: int) -> int:
-        if v < 0:
-            raise ValueError("The matriculation number must be non-negative.")
-        if v > 9999999:
-            raise ValueError("The matriculation number has at most 7 digits.")
-        return v
 
     @field_validator("projects_ratings")
     @classmethod
@@ -33,9 +22,16 @@ class Student(BaseModel):
                 raise ValueError("Project ratings must be between 1 and 5.")
         return v
     
+    '''@field_validator("friends")
+    @classmethod
+    def max_number_of_friends(cls, v: List[int]) -> List[int]:
+        if len(v) > 3:
+            raise ValueError("Only up to three preferred team partners allowed!")
+        return v'''
+    
 
 class Project(BaseModel):
-    id: int
+    id: int = Field(ge=0)
     name: str
     capacity: int
     min_capacity: int
@@ -44,13 +40,6 @@ class Project(BaseModel):
 
     def __hash__(self) -> int:
         return self.id.__hash__()
-
-    @field_validator("id")
-    @classmethod
-    def id_is_non_negative(cls, v: int) -> int:
-        if v < 0:
-            raise ValueError("Project ID should be non-negative.")
-        return v
 
     @field_validator("capacity")
     @classmethod
@@ -65,11 +54,6 @@ class Project(BaseModel):
         if v < 5:
             raise ValueError("Minimum project capacity is too small.")
         return v
-    
-    #@field_validator("programming_requirements")
-    #@classmethod
-    #def check_max(cls, v: List[str, int]):
-    #    for programing_language in v:
 
     @model_validator(mode="after")
     def check_capacities(self):
@@ -84,11 +68,22 @@ class Instance(BaseModel):
 
     @field_validator("students")
     @classmethod
-    def validate_matr_number(cls, v) -> List[Student]:
+    def validate_matr_number(cls, v: List[Student]) -> List[Student]:
         matr_numbers = [student.matr_number for student in v]
         if len(set(matr_numbers)) != len(matr_numbers):
             raise ValueError("There are duplicates of matriculation numbers!")
         return v
+    
+    '''@field_validator("students")
+    @classmethod
+    def check_friends(cls, v: List[Student]) -> List[Student]:
+        friends = []
+        friends.extend(student.friends for student in v)
+        student_matr_numbers = [student.matr_number for student in v]
+        for friend in friends:
+            if friend not in student_matr_numbers:
+                raise ValueError(f"Friend with matriculation number {friend} does not exist!")
+        return v'''
     
     @model_validator(mode="after")
     def validate_project_ratings(self):
