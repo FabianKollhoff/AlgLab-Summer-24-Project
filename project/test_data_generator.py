@@ -32,9 +32,9 @@ class Generator():
             skills = (4, 4, 4, 4, 4)
         return project_distribution, skills
     
-    def randomStudentRankingProject(self, project_id):
+    def randomStudentRankingProject(self, project_id, num_students, percent_fav_projects):
         bonus = 0
-        if project_id == 1:
+        if project_id <= int(num_students / percent_fav_projects):
             bonus = 0.5
         rating = random.random()
         project_distribution, skills = self.randomStudentType()
@@ -67,8 +67,8 @@ class Generator():
         return projects
 
 
-    def generateProjectsRatings(self):
-        return {project : self.randomStudentRankingProject(project) for project in self.projects}
+    def generateProjectsRatings(self, percent_fav_projects):
+        return {project : self.randomStudentRankingProject(project, number_students, percent_fav_projects) for project in self.projects}
     
     def generateSkillRatings(self):
         data, skills = self.randomStudentType()
@@ -79,17 +79,17 @@ class Generator():
         skill_dict.update({"PHP": skills[4]})
         return skill_dict
 
-    def generateStudents(self, number_students):
+    def generateStudents(self, number_students, percent_fav_projects):
         students = []
         for i in range(number_students):
-            student = Student(last_name="Doe", first_name="Joe", matr_number=i, projects_ratings=self.generateProjectsRatings(), skills_ratings=self.generateSkillRatings())
+            student = Student(last_name="Doe", first_name="Joe", matr_number=i, projects_ratings=self.generateProjectsRatings(percent_fav_projects), skills_ratings=self.generateSkillRatings())
             students.append(student)
         return students
 
-    def generateInstance(self, number_projects, number_students):
+    def generateInstance(self, number_projects, number_students, percent_fav_projects):
         self.sumProjectsCapacity = 0
         self.projects = self.generateProjects(number_projects=number_projects, number_students=number_students)
-        self.students = self.generateStudents(number_students=number_students)
+        self.students = self.generateStudents(number_students=number_students, percent_fav_projects=percent_fav_projects)
         self.instance = Instance(
                 students=self.students,
                 projects=self.projects
@@ -105,7 +105,7 @@ instance_sizes = [(10,100),(20,200), (30, 300), (50,500), (100,1000)]
 
 for instance_size in instance_sizes:
     number_projects, number_students = instance_size
-    data = g.generateInstance(number_students = number_students,number_projects = number_projects).model_dump_json()
+    data = g.generateInstance(number_students = number_students,number_projects = number_projects, percent_fav_projects=10).model_dump_json()
     with open(f"instances/data_s{number_students}_g{number_projects}.json", 'w') as f:
         f.write(data)
 
