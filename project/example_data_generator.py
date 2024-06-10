@@ -79,10 +79,10 @@ class ExampleGenerator():
     def skills_to_ratings(self):
         for id,row in self.data.items():
             student_skills = {}
-            kenntnisse = row["Kenntnisse"]
+            knowledge = row["Kenntnisse"]
             rating = random.random()
-            if "Python" in kenntnisse:
-                if kenntnisse["Python"] == "Anfänger":
+            if "Python" in knowledge:
+                if knowledge["Python"] == "Anfänger":
                     if rating > 0.5:
                         student_skills.update({"Python": 2})
                     else:
@@ -95,8 +95,8 @@ class ExampleGenerator():
             else:
                 new_rating = random.randint(1,3)
                 student_skills.update({"Python": new_rating})
-            if "Java" in kenntnisse:
-                if kenntnisse["Java"] == "Anfänger":
+            if "Java" in knowledge:
+                if knowledge["Java"] == "Anfänger":
                     if rating > 0.5:
                         student_skills.update({"Java": 2})
                     else:
@@ -109,8 +109,8 @@ class ExampleGenerator():
             else:
                 new_rating = random.randint(1,3)
                 student_skills.update({"Java": new_rating})
-            if "SQL" in kenntnisse:
-                if kenntnisse["SQL"] == "Anfänger":
+            if "SQL" in knowledge:
+                if knowledge["SQL"] == "Anfänger":
                     if rating > 0.5:
                         student_skills.update({"SQL": 2})
                     else:
@@ -123,8 +123,8 @@ class ExampleGenerator():
             else:
                 new_rating = random.randint(1,3)
                 student_skills.update({"SQL": new_rating})
-            if "C++" in kenntnisse:
-                if kenntnisse["C++"] == "Anfänger":
+            if "C++" in knowledge:
+                if knowledge["C++"] == "Anfänger":
                     if rating > 0.5:
                         student_skills.update({"C++": 2})
                     else:
@@ -137,8 +137,8 @@ class ExampleGenerator():
             else:
                 new_rating = random.randint(1,3)
                 student_skills.update({"C++": new_rating})
-            if "PHP" in kenntnisse:
-                if kenntnisse["PHP"] == "Anfänger":
+            if "PHP" in knowledge:
+                if knowledge["PHP"] == "Anfänger":
                     if rating > 0.5:
                         student_skills.update({"PHP": 2})
                     else:
