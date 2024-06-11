@@ -277,7 +277,7 @@ class SepSolver():
 
     def solve(self) -> Solution:
         #reduce the number of lower ratings iteratively
-        def callback(model, where):
+        '''def callback(model, where):
             if where == gp.GRB.Callback.MIPSOL:
                 solution = self.get_current_solution(in_callback=True)
                 solution_ratings = self.get_solution_ratings(solution)
@@ -296,10 +296,10 @@ class SepSolver():
                         current_number_of_ratings[solution_ratings[student]] += 1
                 print("Current solution count:", current_number_of_ratings)
                 lowest_solution_rating = min((rating for rating, number in current_number_of_ratings.items() if number > 0), default=None)
-                #model.cbLazy(self._projectParticipation._enforce_higher_rating(optimize_students, lowest_solution_rating) <= current_number_of_ratings[lowest_solution_rating] - 1)
+                #model.cbLazy(self._projectParticipation._enforce_higher_rating(optimize_students, lowest_solution_rating) <= current_number_of_ratings[lowest_solution_rating] - 1)'''
 
         self._model.Params.lazyConstraints = 1
-        self._model.optimize(callback)
+        self._model.optimize() #callback
         if self._model.status == GRB.OPTIMAL:
             if self.current_best_solution == None:
                 self.current_best_solution = self.get_current_solution()
