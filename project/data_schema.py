@@ -8,7 +8,7 @@ class Student(BaseModel):
     matr_number: int = Field(ge=0, le=9999999)
     projects_ratings: Dict[int, int]
     programming_language_ratings: Dict[str, int]
-    #friends: List[int]
+    friends: List[int]
 
     def __hash__(self) -> int:
         return self.matr_number.__hash__()

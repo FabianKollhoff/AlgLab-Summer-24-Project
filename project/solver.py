@@ -204,7 +204,7 @@ class _ProgrammingObjective():
     
 
 class _FriendsObjective():
-    def __init__(self, students: List[Student], projects: List[Project], studentProjectVars: _ProjectVars):
+    def __init__(self, students: List[Student], projects: List[Project], studentProjectVars: _StudentProjectVars):
         self._students = students
         self._projects = projects
         self._studentProjectVars = studentProjectVars
@@ -220,8 +220,9 @@ class _FriendsObjective():
     def get(self):
         #return sum of all friend relations
         return sum(
-            self._studentProjectVars.var_student_in_project(stu_a, proj) * self._studentProjectVars.var_student_in_project(stu_b, proj)
+            self._studentProjectVars.x(stu_a, proj) * self._studentProjectVars.x(stu_b, proj)
               for stu_a, stu_b in self.relations for proj in self._projects)
+
 class SepSolver():
 
     def __init__(self, instance: Instance):

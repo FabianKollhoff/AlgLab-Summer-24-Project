@@ -96,6 +96,13 @@ class Generator():
             students.append(student)
         return students
     
+    def generateVetos(self):
+        prohibited_students = []
+        score = random.random()
+        if score <= 0.1:
+            prohibited_students = random.sample(self.students, math.ceil(math.log10(len(self.students))) + 1)
+        return prohibited_students
+
     def generateRandomFriends(self, student_matr, number_students):
         # smaple from 0-2 random matr_numbers as friends of student. Make sure own matr_number not in friends
         num_friends = random.randint(0, 2)
@@ -129,7 +136,7 @@ class Generator():
 
 
 
-    def generateInstance(self, number_projects, number_students):
+    def generateInstance(self, number_projects, number_students, percent_fav_projects):
         self.sumProjectsCapacity = 0
         self.students = self.generateStudents(number_students=number_students)
         self.projects = self.generateProjects(number_projects=number_projects, number_students=number_students)
