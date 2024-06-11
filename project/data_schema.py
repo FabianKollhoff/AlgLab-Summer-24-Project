@@ -112,3 +112,8 @@ class Instance(BaseModel):
         
 class Solution(BaseModel):
     projects: Dict[int, List[Student]]
+
+    def get_proj_for_student(self, student: Student):
+        for proj in self.projects:
+            if student in self.projects[proj]:
+                return proj

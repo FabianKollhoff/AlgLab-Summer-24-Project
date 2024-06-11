@@ -1,5 +1,6 @@
 from typing import Dict, List
 from gurobipy import GRB
+from typing import List
 import gurobipy as gp
 
 from data_schema import Project, Student, Instance, Solution
@@ -202,6 +203,25 @@ class _ProgrammingObjective():
         )
     
 
+class _FriendsObjective():
+    def __init__(self, students: List[Student], projects: List[Project], studentProjectVars: _ProjectVars):
+        self._students = students
+        self._projects = projects
+        self._studentProjectVars = studentProjectVars
+
+        self.relations = []
+        #here get a list of all friend relations as tuple (Student.matr_number,Student.matr_number). Make sure no duplicates are added
+        for student in self._students:
+            for friend in student.friends:
+                if (friend, student.matr_number) not in self.relations:
+                    self.relations.append((student.matr_number, friend))
+
+
+    def get(self):
+        #return sum of all friend relations
+        return sum(
+            self._studentProjectVars.var_student_in_project(stu_a, proj) * self._studentProjectVars.var_student_in_project(stu_b, proj)
+              for stu_a, stu_b in self.relations for proj in self._projects)
 class SepSolver():
 
     def __init__(self, instance: Instance):

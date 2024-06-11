@@ -89,19 +89,47 @@ class Generator():
 
     def generateStudents(self, number_students):
         students = []
+        #generate the pre-defined friendgroups
+        friendships = self.generateFriendgroups(number_students)
         for i in range(number_students):
-            student = Student(last_name="Doe", first_name="Joe", matr_number=i, projects_ratings={}, programming_language_ratings=self.generateSkillRatings())
+            student = Student(last_name="Doe", first_name="Joe", matr_number=i, projects_ratings={}, programming_language_ratings=self.generateSkillRatings(), friends=friendships[i])
             students.append(student)
         return students
     
-    def generateVetos(self):
-        prohibited_students = []
-        score = random.random()
-        if score <= 0.1:
-            prohibited_students = random.sample(self.students, math.ceil(math.log10(len(self.students))) + 1)
-        return prohibited_students
+    def generateRandomFriends(self, student_matr, number_students):
+        # smaple from 0-2 random matr_numbers as friends of student. Make sure own matr_number not in friends
+        num_friends = random.randint(0, 2)
+        #print(number_students, student_matr)
+        nums = list(range(number_students))
+        nums.remove(student_matr)
+        friends = random.sample(nums, num_friends)
+        #print(friends)
+        return friends
+    
+    def generateFriendgroups(self, number_students):
+        #alternative: after students are generated, generate friend groups and add them individually to students list. To make sure
+        # friend relationship is mutual. Have pre-generated dict (for every student give their friends)
+        # generate some friend group, make sure these groups dont overlap. Groups of size 2 or 3
+        nums = list(range(number_students))
+        #get 20 samples of distict groups of 2 or 3 students
+        groups = []
+        friends = {i: [] for i in nums}
+        for i in range(20):
+            size = random.randint(2,3)
+            group = random.sample(nums, size)
+            for stu in group:
+                nums.remove(stu)
+            groups.append(group)
+        #add the friend relations to the friends dict
+        for group in groups:
+            for stu in group:
+                friends[stu] = [i for i in group if i != stu]
+        
+        return friends
 
-    def generateInstance(self, number_projects, number_students, percent_fav_projects):
+
+
+    def generateInstance(self, number_projects, number_students):
         self.sumProjectsCapacity = 0
         self.students = self.generateStudents(number_students=number_students)
         self.projects = self.generateProjects(number_projects=number_projects, number_students=number_students)
