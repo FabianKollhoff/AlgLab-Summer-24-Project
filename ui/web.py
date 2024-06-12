@@ -1,6 +1,28 @@
 import streamlit as st
+from project.data_schema import Student
 from streamlit.components.v1 import html
 
+
+def create_student():
+   try:
+      data = Student(last_name=last_name,
+                     first_name=first_name,
+                     matr_number=matr_number,
+                     projects_ratings={0, projects_ratings},
+                     progamming_language_ratings={
+                     "Python": python,
+                     "Java": java,
+                     "C/C++": c_cpp,
+                     "SQL": sql,
+                     "PHP": php},
+                     friends=[friend1[2], friend2[2]]
+                     ).model_dump.json()
+      with open(f"instances/data_{matr_number}.json", 'w') as f:
+         f.write(data)
+   except:
+      message = """alert("Bitte überprüfe deine Eingaben und korrigiere sie.");"""
+      js = f"<script>{message}</script>"
+      html(js)
 
 def show_confirmation_message():
    message = """
@@ -8,6 +30,8 @@ def show_confirmation_message():
    """
    js = f"<script>{message}</script>"
    html(js)
+   #create_student()
+
 
 st.write("""
 # SEP - Anmeldung
@@ -19,7 +43,6 @@ with st.form("my_form"):
    last_name = st.text_input("Nachname")
    matr_number = st.text_input("Matrikelnummer")
    programme = st.selectbox("Wähle deinen Studiengang", ['', "Informatik","Wirtschaftsinformatik","Informations-Systemtechnik"])
-   preference = st.selectbox("Gebe deine Präferenz an", ['',"Frontend","Backend", "Keine Präferenz"])
    st.write("Schätze im Folgenden deine Programmierkenntnisse ein. 1: keine Kenntnisse, 2: Anfängerniveau, 3: fortgeschritten, 4: Expertenniveau")
    python = st.radio("Python", options=["1", "2", "3", "4"], horizontal=True)
    java = st.radio("Java", options=["1", "2", "3", "4"], horizontal=True)
