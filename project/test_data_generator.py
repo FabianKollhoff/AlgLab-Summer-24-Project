@@ -1,10 +1,10 @@
-from data_schema import Project, Student, Instance
-import json
-
 import math
 import random
 
-class Generator():
+from data_schema import Instance, Project, Student
+
+
+class Generator:
 
     def randomStudentType(self):
         rating = random.random()
@@ -30,7 +30,7 @@ class Generator():
             project_distribution = (0.4, 0.2, 0.1, 0,1)
             skills = (4, 4, 4, 4, 4)
         return project_distribution, skills
-    
+
     def randomStudentRankingProject(self, project_id, num_students, percent_fav_projects):
         bonus = 0
         if project_id <= int(num_students / percent_fav_projects):
@@ -46,17 +46,16 @@ class Generator():
         if rating <= project_distribution[0] + project_distribution[1] + project_distribution[2] + project_distribution[3]:
             return 2
         return 1
-    
+
 
     def randomProjectCapacity(self):
         capacity = random.randint(5, 16)
         self.sumProjectsCapacity += capacity
         min_capacity = random.randint(5, capacity)
         return (capacity, min_capacity)
-    
+
     def genererateProgrammingRequirements(self):
-        programming_requirements = {"Python":random.randint(0,3), "Java":random.randint(0,3), "C/C++":random.randint(0,3), "PHP":random.randint(0,3), "SQL":random.randint(0,3)}
-        return programming_requirements
+        return {"Python":random.randint(0,3), "Java":random.randint(0,3), "C/C++":random.randint(0,3), "PHP":random.randint(0,3), "SQL":random.randint(0,3)}
 
     def generateProject(self, i):
         capacity, min_capacity = self.randomProjectCapacity()
@@ -77,7 +76,7 @@ class Generator():
 
     def generateProjectsRatings(self, percent_fav_projects):
         return {project : self.randomStudentRankingProject(project, number_students, percent_fav_projects) for project in self.projects}
-    
+
     def generateSkillRatings(self):
         data, skills = self.randomStudentType()
         skill_dict = {"Python": skills[0]}
@@ -95,7 +94,7 @@ class Generator():
             student = Student(last_name="Doe", first_name="Joe", matr_number=i, projects_ratings={}, programming_language_ratings=self.generateSkillRatings(), friends=friendships[i])
             students.append(student)
         return students
-    
+
     def generateVetos(self):
         prohibited_students = []
         score = random.random()
@@ -109,10 +108,9 @@ class Generator():
         #print(number_students, student_matr)
         nums = list(range(number_students))
         nums.remove(student_matr)
-        friends = random.sample(nums, num_friends)
-        #print(friends)
-        return friends
-    
+
+        return random.sample(nums, num_friends)
+
     def generateFriendgroups(self, number_students):
         #alternative: after students are generated, generate friend groups and add them individually to students list. To make sure
         # friend relationship is mutual. Have pre-generated dict (for every student give their friends)
@@ -121,7 +119,7 @@ class Generator():
         #get 20 samples of distict groups of 2 or 3 students
         groups = []
         friends = {i: [] for i in nums}
-        for i in range(20):
+        for _i in range(20):
             size = random.randint(2,3)
             group = random.sample(nums, size)
             for stu in group:
@@ -131,7 +129,7 @@ class Generator():
         for group in groups:
             for stu in group:
                 friends[stu] = [i for i in group if i != stu]
-        
+
         return friends
 
 
@@ -146,10 +144,10 @@ class Generator():
                 students=self.students,
                 projects=self.projects
             )
-        
+
         return self.instance
-    
-                
+
+
 
 g = Generator()
 

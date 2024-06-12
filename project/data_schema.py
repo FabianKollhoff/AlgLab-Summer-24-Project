@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import Dict, List
+
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class Student(BaseModel):
@@ -21,14 +22,14 @@ class Student(BaseModel):
             if rating < 1 or rating > 5:
                 raise ValueError("Project ratings must be between 1 and 5.")
         return v
-    
+
     @field_validator("friends")
     @classmethod
     def max_number_of_friends(cls, v: List[int]) -> List[int]:
         if len(v) > 2:
             raise ValueError("Only up to two preferred team partners allowed!")
         return v
-    
+
 
 class Project(BaseModel):
     id: int = Field(ge=0)
@@ -47,7 +48,7 @@ class Project(BaseModel):
         if v < 5:
             raise ValueError("Maximum project capacity is too small.")
         return v
-    
+
     @field_validator("min_capacity")
     @classmethod
     def check_min_capacity(cls, v: int) -> int:
@@ -60,7 +61,7 @@ class Project(BaseModel):
         if self.min_capacity > self.capacity:
             raise ValueError(f"The minimum capacity {self.min_capacity} is bigger than the maximum capacity {self.capacity}.")
         return self
-    
+
 
 class Instance(BaseModel):
     students: List[Student]
@@ -73,7 +74,7 @@ class Instance(BaseModel):
         if len(set(matr_numbers)) != len(matr_numbers):
             raise ValueError("There are duplicates of matriculation numbers!")
         return v
-    
+
     @field_validator("students")
     @classmethod
     def check_friends(cls, v: List[Student]) -> List[Student]:
@@ -84,7 +85,7 @@ class Instance(BaseModel):
                 if friend not in student_matr_numbers:
                     raise ValueError(f"Friend with matriculation number {friend} does not exist!")
         return v
-    
+
     @model_validator(mode="after")
     def validate_project_ratings(self):
         for student in self.students:
@@ -92,7 +93,7 @@ class Instance(BaseModel):
                 if project_id not in self.projects:
                     raise ValueError(f"Invalid project ID {project_id} in student's project ratings.")
         return self
-    
+
     @model_validator(mode="after")
     def check_number_of_students(self):
         number_of_students = len(self.students)
@@ -100,7 +101,7 @@ class Instance(BaseModel):
         if number_of_students > sum(project.capacity for project in self.projects.values()):
             raise ValueError(f"The number of students {number_of_students} exceeds the sum of all project capacities {sum_capacity}!")
         return self
-    
+
     @model_validator(mode="after")
     def check_vetos(self):
         for project in self.projects.values():
@@ -108,8 +109,8 @@ class Instance(BaseModel):
                 if prohibited_student not in self.students:
                     raise ValueError(f"Student with matriculation number {prohibited_student.matr_number} does not exist.")
         return self
-    
-        
+
+
 class Solution(BaseModel):
     projects: Dict[int, List[Student]]
 
@@ -117,3 +118,4 @@ class Solution(BaseModel):
         for proj in self.projects:
             if student in self.projects[proj]:
                 return proj
+        return None
