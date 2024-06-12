@@ -22,12 +22,12 @@ class Student(BaseModel):
                 raise ValueError("Project ratings must be between 1 and 5.")
         return v
     
-    '''@field_validator("friends")
+    @field_validator("friends")
     @classmethod
     def max_number_of_friends(cls, v: List[int]) -> List[int]:
-        if len(v) > 3:
-            raise ValueError("Only up to three preferred team partners allowed!")
-        return v'''
+        if len(v) > 2:
+            raise ValueError("Only up to two preferred team partners allowed!")
+        return v
     
 
 class Project(BaseModel):
@@ -74,16 +74,16 @@ class Instance(BaseModel):
             raise ValueError("There are duplicates of matriculation numbers!")
         return v
     
-    '''@field_validator("students")
+    @field_validator("students")
     @classmethod
     def check_friends(cls, v: List[Student]) -> List[Student]:
-        friends = []
-        friends.extend(student.friends for student in v)
+        friend_groups = [student.friends for student in v]
         student_matr_numbers = [student.matr_number for student in v]
-        for friend in friends:
-            if friend not in student_matr_numbers:
-                raise ValueError(f"Friend with matriculation number {friend} does not exist!")
-        return v'''
+        for friends in friend_groups:
+            for friend in friends:
+                if friend not in student_matr_numbers:
+                    raise ValueError(f"Friend with matriculation number {friend} does not exist!")
+        return v
     
     @model_validator(mode="after")
     def validate_project_ratings(self):

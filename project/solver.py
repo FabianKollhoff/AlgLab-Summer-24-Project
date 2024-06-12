@@ -36,19 +36,19 @@ class _StudentProjectVars():
     def __iter__(self):
         return iter(self.vars_student_in_project.items())
 
-    def for_each_student(self, foo):
+    def for_each_student(self, func):
         for student in self._students:
-            foo(student)
+            func(student)
 
-    def for_each_project(self, foo):
+    def for_each_project(self, func):
         for student in self._students:
-            foo(student)
+            func(student)
 
-    def for_each_student_and_project(self, foo):
+    def for_each_student_and_project(self, func):
         list = []
         for student in self._students:
             for project in self._projects:
-                list.append(foo(student, project))
+                list.append(func(student, project))
         return list
 
         
@@ -101,24 +101,24 @@ class _ProgrammingVars():
             if self.x(programming_language, student, programming_language) is not None:
                 yield self.x(programming_language, student, project)
 
-    def for_each(self, foo):
+    def for_each(self, func):
         list = []
         for student in self._students:
             for project in self._projects:
                 for programming_language in project.programming_requirements:
-                    list.append(foo(programming_language, student, project))
+                    list.append(func(programming_language, student, project))
         return list
 
-    def for_each_student_and_project(self, foo):
+    def for_each_student_and_project(self, func):
         for student in self._students:
             for project in self._projects:
-                foo(student, project)
+                func(student, project)
 
-    def for_each_project_with_programming_language(self, foo):
+    def for_each_project_with_programming_language(self, func):
         list = []
         for project in self._projects:
             for programming_language in project.programming_requirements:
-                list.append(foo(project, programming_language))
+                list.append(func(project, programming_language))
         return list
     
 
