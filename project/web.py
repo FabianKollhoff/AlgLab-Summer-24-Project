@@ -1,22 +1,28 @@
 import streamlit as st
-from project.data_schema import Student
+from data_schema import Student
 from streamlit.components.v1 import html
 
 
 def create_student():
    try:
+      friends = []
+      if matr_number_first_friend != "":
+         friends.append(int(matr_number_first_friend))
+      if matr_number_second_friend != "":
+         friends.append(int(matr_number_second_friend))
+
       data = Student(last_name=last_name,
                      first_name=first_name,
-                     matr_number=matr_number,
-                     projects_ratings={0, projects_ratings},
-                     progamming_language_ratings={
-                     "Python": python,
-                     "Java": java,
-                     "C/C++": c_cpp,
-                     "SQL": sql,
-                     "PHP": php},
-                     friends=[friend1[2], friend2[2]]
-                     ).model_dump.json()
+                     matr_number=int(matr_number),
+                     projects_ratings={0: int(projects_ratings)},
+                     programming_language_ratings={
+                     "Python": int(python),
+                     "Java": int(java),
+                     "C/C++": int(c_cpp),
+                     "SQL": int(sql),
+                     "PHP": int(php)},
+                     friends=friends
+                     ).model_dump_json(indent=2)
       with open(f"instances/data_{matr_number}.json", 'w') as f:
          f.write(data)
    except:
@@ -30,7 +36,7 @@ def show_confirmation_message():
    """
    js = f"<script>{message}</script>"
    html(js)
-   #create_student()
+   create_student()
 
 
 st.write("""
@@ -50,20 +56,8 @@ with st.form("my_form"):
    sql = st.radio("SQL", options=["1", "2", "3", "4"], horizontal=True)
    php = st.radio("PHP", options=["1", "2", "3", "4"], horizontal=True)
    st.write("Gebe bis zu zwei Studierenden, mit denen du gerne zusammenarbeiten möchtest.")
-   friend1=st.columns(3)
-   with friend1[0]:
-      a = st.text_input('Student 1 Vorname')
-   with friend1[1]:
-      a = st.text_input('Student 1 Nachname')
-   with friend1[2]:
-      a = st.text_input('Student 1 Matrikelnummer')
-   friend2=st.columns(3)
-   with friend2[0]:
-      a = st.text_input('Student 2 Vorname')
-   with friend2[1]:
-      a = st.text_input('Student 2 Nachname')
-   with friend2[2]:
-      a = st.text_input('Student 2 Matrikelnummer')
+   matr_number_first_friend = st.text_input('Student 1 Matrikelnummer')
+   matr_number_second_friend = st.text_input('Student 2 Matrikelnummer')
    st.write("Bitte gebe im Folgenden dein Interesse für jedes Projekt an, wobei 1 für \"wenig Interesse\" steht und 5 \"starkes Interesse\" bedeutet. Für Details zu den Projekten kannst du die verlinkten Webseiten besuchen.")
    st.link_button("Projektseite", "https://www.ibr.cs.tu-bs.de/courses/ss24/sep-alg-tg/")
    projects_ratings = st.radio("Projekt XY (6-10 Studierende)", options=["1", "2", "3", "4", "5"], horizontal=True)
