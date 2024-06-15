@@ -122,12 +122,6 @@ class _ProgrammingVars():
     
 
 class _ProjectParticipationConstraint():
-    def __init__(self, students: List[Student], projects: List[Project], studentProjectVars: _StudentProjectVars, emptyProjectVars: _EmptyProjectVars, model: gp.Model):
-        self._students = students
-        self._projects = projects
-        self._studentProjectVars = studentProjectVars
-        self._emptyProjectVars = emptyProjectVars
-        self._model = model
 
     def _enforce_every_student_in_exactly_one_project(self):
         for student in self._students:
@@ -155,16 +149,21 @@ class _ProjectParticipationConstraint():
         return sum(self._studentProjectVars.for_each_student_and_project(
             lambda student, project: self._studentProjectVars.x(student, project) if (self._studentProjectVars.rating(student, project) == lowest_solution_rating and student in students) else 0
         ))
-
-
-class _StudentProgrammingConstraint():
-    def __init__(self, students: List[Student], projects: List[Project], studentProjectVars: _StudentProjectVars, programmingVars: _ProgrammingVars, model: gp.Model):
+    
+    def __init__(self, students: List[Student], projects: List[Project], studentProjectVars: _StudentProjectVars, emptyProjectVars: _EmptyProjectVars, model: gp.Model):
         self._students = students
         self._projects = projects
         self._studentProjectVars = studentProjectVars
-        self._programmingVars = programmingVars
+        self._emptyProjectVars = emptyProjectVars
         self._model = model
 
+        self._projectParticipation._enforce_every_student_in_exactly_one_project()
+        self._projectParticipation._enforce_every_project_max_number_students()
+        self._projectParticipation._enforce_every_project_empty_or_has_minimum_number_students()
+        self._projectParticipation._enforce_vetos()
+
+
+class _StudentProgrammingConstraint():
     def _enforce_student_only_is_in_one_project_and_has_one_role(self):
         self._programmingVars.for_each_student_and_project(lambda student, project:
                 self._model.addConstr(
@@ -176,6 +175,15 @@ class _StudentProgrammingConstraint():
         self._programmingVars.for_each_project_with_programming_language(lambda project, programming_language:
                 self._model.addConstr(sum(self._programmingVars.all_students(programming_language, project)) <= project.programming_requirements[programming_language]))
         
+    def __init__(self, students: List[Student], projects: List[Project], studentProjectVars: _StudentProjectVars, programmingVars: _ProgrammingVars, model: gp.Model):
+        self._students = students
+        self._projects = projects
+        self._studentProjectVars = studentProjectVars
+        self._programmingVars = programmingVars
+        self._model = model
+
+        self._studentProgrammingConstraint._enforce_student_only_is_in_one_project_and_has_one_role()
+        self._studentProgrammingConstraint._enforce_maximum_number_roles_project_assigned()
 
 class _RatingObjective():
     def __init__(self, students: List[Student], projects: List[Project], studentProjectVars: _StudentProjectVars):
@@ -216,14 +224,6 @@ class SepSolver():
 
         self._projectParticipation = _ProjectParticipationConstraint(students=self.students, projects=self.projects, studentProjectVars=self._studentProjectVars, emptyProjectVars=self._emptyProjectVars, model=self._model)
         self._studentProgrammingConstraint = _StudentProgrammingConstraint(students=self.students, projects=self.projects, studentProjectVars=self._studentProjectVars, programmingVars=self._programmingVars, model=self._model)
-        
-        self._projectParticipation._enforce_every_student_in_exactly_one_project()
-        self._projectParticipation._enforce_every_project_max_number_students()
-        self._projectParticipation._enforce_every_project_empty_or_has_minimum_number_students()
-        self._projectParticipation._enforce_vetos()
-
-        self._studentProgrammingConstraint._enforce_student_only_is_in_one_project_and_has_one_role()
-        self._studentProgrammingConstraint._enforce_maximum_number_roles_project_assigned()
 
         self._ratingObjective = _RatingObjective(students=self.students, projects=self.projects, studentProjectVars=self._studentProjectVars)
         self._programmingObjective = _ProgrammingObjective(students=self.students, projects=self.projects, programmingVars=self._programmingVars)
