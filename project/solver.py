@@ -258,6 +258,7 @@ class _ProjectParticipationConstraint:
     def _enforce_higher_rating(
         self, students: List[Student], lowest_solution_rating: int
     ):
+        """ """
         return sum(
             self._studentProjectVars.for_each_student_and_project(
                 lambda student, project: self._studentProjectVars.x(student, project)
@@ -291,7 +292,14 @@ class _ProjectParticipationConstraint:
 
 
 class _StudentProgrammingConstraint:
+    """
+    A helper class to enforce the constraints regarding the role allocation in the projects.
+    """
+
     def _enforce_student_only_is_in_one_project_and_has_one_role(self):
+        """
+        The method enforces that every student is assigned exactly one role in a single project.
+        """
         self._programmingVars.for_each_student_and_project(
             lambda student, project: self._model.addConstr(
                 sum(self._programmingVars.all_languages(student, project))
@@ -300,6 +308,9 @@ class _StudentProgrammingConstraint:
         )
 
     def _enforce_maximum_number_roles_project_assigned(self):
+        """
+        The method enforces that there are not to many roles assigned.
+        """
         self._programmingVars.for_each_project_with_programming_language(
             lambda project, programming_language: self._model.addConstr(
                 sum(self._programmingVars.all_students(programming_language, project))
@@ -326,6 +337,10 @@ class _StudentProgrammingConstraint:
 
 
 class _RatingObjective:
+    """
+    A helper class to calculate to calculate the objective concerning the ratings of the students.
+    """
+
     def __init__(
         self,
         students: List[Student],
@@ -346,6 +361,10 @@ class _RatingObjective:
 
 
 class _ProgrammingObjective:
+    """
+    A helper class to calculate the objective for the programming languages concerning the skills and role assignment.
+    """
+
     def __init__(
         self,
         students: List[Student],
@@ -368,6 +387,10 @@ class _ProgrammingObjective:
 
 
 class _FriendsObjective:
+    """
+    A helper class to calculate the objective for the friendgroups.
+    """
+
     def __init__(
         self,
         students: List[Student],
@@ -396,6 +419,10 @@ class _FriendsObjective:
 
 
 class SepSolver:
+    """
+    A solver to solve the SEP project student assignement incoperating project ratings, programmings skills and friend groups.
+    """
+
     def __init__(self, instance: Instance):
         self.students = instance.students
         self.projects = list(instance.projects.values())
