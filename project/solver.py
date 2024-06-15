@@ -157,10 +157,10 @@ class _ProjectParticipationConstraint():
         self._emptyProjectVars = emptyProjectVars
         self._model = model
 
-        self._projectParticipation._enforce_every_student_in_exactly_one_project()
-        self._projectParticipation._enforce_every_project_max_number_students()
-        self._projectParticipation._enforce_every_project_empty_or_has_minimum_number_students()
-        self._projectParticipation._enforce_vetos()
+        self._enforce_every_student_in_exactly_one_project()
+        self._enforce_every_project_max_number_students()
+        self._enforce_every_project_empty_or_has_minimum_number_students()
+        self._enforce_vetos()
 
 
 class _StudentProgrammingConstraint():
@@ -182,8 +182,8 @@ class _StudentProgrammingConstraint():
         self._programmingVars = programmingVars
         self._model = model
 
-        self._studentProgrammingConstraint._enforce_student_only_is_in_one_project_and_has_one_role()
-        self._studentProgrammingConstraint._enforce_maximum_number_roles_project_assigned()
+        self._enforce_student_only_is_in_one_project_and_has_one_role()
+        self._enforce_maximum_number_roles_project_assigned()
 
 
 class _RatingObjective:
