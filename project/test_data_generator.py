@@ -61,8 +61,7 @@ class Generator():
 
 
     def generateProjectsRatings(self):
-        rating_probalilitys = self.generateDistrubution(self.projects)
-        return {project : self.randomStudentRankingProject(rating_probalilitys[project]) for project in self.projects}
+        return {project : self.randomStudentRankingProject(self.distribution[project]) for project in self.projects}
     
     def generateSkillRatings(self):
         skills = self.randomStudentType()
@@ -75,6 +74,7 @@ class Generator():
 
     def generateStudents(self, number_students):
         students = []
+        self.distribution = self.generateDistrubution(self.projects)
         for i in range(number_students):
             student = Student(last_name="Doe", first_name="Joe", matr_number=i, projects_ratings=self.generateProjectsRatings(), skills_ratings=self.generateSkillRatings())
             students.append(student)
@@ -82,13 +82,22 @@ class Generator():
     
     def generateDistrubution(self, projects):
         number_projects = len(projects)
-        mu = 3.5
-        sigma = int(len(projects)/10)
-        # generate a average rating distribution in form of a gaussian distribution
-        average_ratings = np.random.normal(mu, sigma, number_projects)
-        # clamp ratings to be between 1 and 5
+        
+        # Generate ratings using a normal distribution with a wider spread
+        #average_ratings = np.random.normal(4.5, 1.0, number_projects)
+        average_ratings = [3 for i in range(number_projects)]
+        
+        # generate noise to increase spread
+        jitter_amount = 2
+        noise = np.random.uniform(low=-jitter_amount, high=jitter_amount, size=number_projects)
+        #print(f"noise: {noise}")
+        average_ratings = average_ratings + noise
+
+        # Clamp ratings to be between 1 and 5
         average_ratings = np.clip(average_ratings, 1, 5)
-        return {project: self.calculateRatingProbabilities(rating) for project,rating in zip(projects,average_ratings)}
+        #print(average_ratings)
+        print({project: rating for project, rating in zip(projects, average_ratings)})
+        return {project: self.calculateRatingProbabilities(rating) for project, rating in zip(projects, average_ratings)}
     
     def calculateRatingProbabilities(self, average_rating):
         model = cp_model.CpModel()
@@ -131,6 +140,7 @@ class Generator():
 g = Generator()
 
 instance_sizes = [(10,100),(20,200), (30, 300), (50,500), (100,1000)]
+#instance_sizes = [(30,300)]
 
 for instance_size in instance_sizes:
     number_projects, number_students = instance_size
