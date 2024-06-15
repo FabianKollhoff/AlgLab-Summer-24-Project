@@ -18,6 +18,10 @@ class _StudentProjectVars:
 
         self._model = model
 
+        self.matnr_students = {
+            student.matr_number: student for student in self._students
+        }
+
         # variables whether student is in project
         self.vars_student_in_project = {
             (student, project): {
@@ -35,6 +39,12 @@ class _StudentProjectVars:
         Returns the variable assigned to the student and project.
         """
         return self.vars_student_in_project[(student, project_id)]["var"]
+    
+    def x_matr(self, student_matr: int, project_id: int) -> gp.Var:
+        """
+        Returns the variable assigned to the student and project.
+        """
+        return self.vars_student_in_project[(self.matnr_students[student_matr], project_id)]["var"]
 
     def rating(self, student: Student, project_id: int):
         """
@@ -207,7 +217,7 @@ class _ProjectParticipationConstraint:
         """
         for student in self._students:
             self._model.addConstr(
-                sum(self._studentProjectVars.all_projects_with_student(student)) == 1
+                sum(self._studentProjectVars.all_projects_with_student(student=student)) == 1
             )
 
     def _enforce_every_project_max_number_students(self):
@@ -216,7 +226,7 @@ class _ProjectParticipationConstraint:
         """
         for project in self._projects:
             self._model.addConstr(
-                sum(self._studentProjectVars.all_students_with_project(project))
+                sum(self._studentProjectVars.all_students_with_project(project=project))
                 <= project.capacity
             )
 
@@ -412,8 +422,8 @@ class _FriendsObjective:
     def get(self):
         # return sum of all friend relations
         return sum(
-            self._studentProjectVars.x(stu_a, proj)
-            * self._studentProjectVars.x(stu_b, proj)
+            self._studentProjectVars.x_matr(stu_a, proj)
+            * self._studentProjectVars.x_matr(stu_b, proj)
             for stu_a, stu_b in self.relations
             for proj in self._projects
         )
@@ -465,11 +475,11 @@ class SepSolver:
             projects=self.projects,
             programmingVars=self._programmingVars,
         )
-        #self._friendsObjective = _FriendsObjective(
-        #    students=self.students,
-        #    projects=self.projects,
-        #    studentProjectVars=self._studentProjectVars,
-        #)
+        self._friendsObjective = _FriendsObjective(
+            students=self.students,
+            projects=self.projects,
+            studentProjectVars=self._studentProjectVars,
+        )
 
         self.students_no_min_rating = self.students_without_minimum_positive_ratings()
         self.current_best_solution = None
@@ -561,11 +571,11 @@ class SepSolver:
             self._model.setObjective(self._programmingObjective.get(),gp.GRB.MAXIMIZE,
         )
 
-        #self._model.optimize()
-        #if self._model.status == GRB.OPTIMAL:
-        #    self._model.addConstr(self._programmingObjective.get() >= self._model.getObjective().getValue() * 0.9)
-        #    self._model.setObjective(self._friendsObjective.get(),gp.GRB.MAXIMIZE,
-        #)
+        self._model.optimize()
+        if self._model.status == GRB.OPTIMAL:
+            self._model.addConstr(self._programmingObjective.get() >= self._model.getObjective().getValue() * 0.9)
+            self._model.setObjective(self._friendsObjective.get(),gp.GRB.MAXIMIZE,
+        )
 
         self._model.optimize()  # callback
         if self._model.status == GRB.OPTIMAL:
