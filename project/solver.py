@@ -7,7 +7,7 @@ from gurobipy import GRB
 
 class _StudentProjectVars:
     """
-    An object to manage the gurobi variables for the studends and projects selection.
+    A helper class to manage the gurobi variables for the studends and projects selection.
     """
 
     def __init__(
@@ -31,31 +31,55 @@ class _StudentProjectVars:
         }
 
     def x(self, student: Student, project_id: int) -> gp.Var:
+        """
+        Returns the variable assigned to the student and project.
+        """
         return self.vars_student_in_project[(student, project_id)]["var"]
 
     def rating(self, student: Student, project_id: int):
+        """
+        Returns the rating of the given student for the given project.
+        """
         return self.vars_student_in_project[(student, project_id)]["rating"]
 
     def all_projects_with_student(self, student: Student):
+        """
+        Returns all the variables for all project of the given student.
+        """
         for project in self._projects:
             yield self.x(student, project)
 
     def all_students_with_project(self, project: Project):
+        """
+        Returns all the variables for all students of a given project.
+        """
         for student in self._students:
             yield self.x(student, project)
 
     def __iter__(self):
+        """
+        Iterate overall variables.
+        """
         return iter(self.vars_student_in_project.items())
 
     def for_each_student(self, func):
+        """
+        For every student the given function is executed.
+        """
         for student in self._students:
             func(student)
 
     def for_each_project(self, func):
+        """
+        For every project the given function is executed.
+        """
         for student in self._students:
             func(student)
 
     def for_each_student_and_project(self, func):
+        """
+        For every student and project the given function is executed and all results are returned in form of a list.
+        """
         list = []
         for student in self._students:
             for project in self._projects:
@@ -64,7 +88,9 @@ class _StudentProjectVars:
 
 
 class _EmptyProjectVars:
-    """ """
+    """
+    A helper class to manage the gurobi variables which specify whether a project is empty.
+    """
 
     def __init__(self, projects: List[Project], model: gp.Model) -> None:
         # variable whether project is empty
@@ -74,11 +100,16 @@ class _EmptyProjectVars:
         }
 
     def x(self, project) -> gp.Var:
+        """
+        Return the variable of the given project.
+        """
         return self.vars_project_empty[project]
 
 
 class _ProgrammingVars:
-    """ """
+    """
+    A helper class to manage the gurobi variables for assigning roles for students in projects.
+    """
 
     def __init__(
         self, students: List[Student], projects: List[Project], model: gp.Model
@@ -98,10 +129,12 @@ class _ProgrammingVars:
             if programming_language in student.programming_language_ratings
         }
 
-    # var programming student in project
     def x(
         self, programming_language: str, student: Student, project: Project
     ) -> gp.Var:
+        """
+        Return the variable for the given programming language, student and project.
+        """
         if (
             programming_language,
             student,
@@ -119,16 +152,25 @@ class _ProgrammingVars:
         return iter(self.vars_programming_language_student_in_project.items())
 
     def all_languages(self, student: Student, project: Project):
+        """
+        Return all languages of the given students and projects
+        """
         for programming_language in project.programming_requirements:
             if self.x(programming_language, student, programming_language) is not None:
                 yield self.x(programming_language, student, project)
 
     def all_students(self, programming_language: str, project: Project):
+        """
+        Return all students of the given languages and projects.
+        """
         for student in self._students:
             if self.x(programming_language, student, programming_language) is not None:
                 yield self.x(programming_language, student, project)
 
     def for_each(self, func):
+        """
+        Run the the given function for all students, projects and programming_languages and return the results in a form of a list.
+        """
         list = []
         for student in self._students:
             for project in self._projects:
@@ -137,11 +179,16 @@ class _ProgrammingVars:
         return list
 
     def for_each_student_and_project(self, func):
+        """
+        Run the given function for all students and projects"""
         for student in self._students:
             for project in self._projects:
                 func(student, project)
 
     def for_each_project_with_programming_language(self, func):
+        """
+        Run the given function for all projects and programming languages
+        """
         list = []
         for project in self._projects:
             for programming_language in project.programming_requirements:
@@ -150,13 +197,23 @@ class _ProgrammingVars:
 
 
 class _ProjectParticipationConstraint:
+    """
+    A helper class to enforce the constraints regarding the participation and allocation of the students to projects.
+    """
+
     def _enforce_every_student_in_exactly_one_project(self):
+        """
+        The method enforces that every student is at least in one project and at most in one project.
+        """
         for student in self._students:
             self._model.addConstr(
                 sum(self._studentProjectVars.all_projects_with_student(student)) == 1
             )
 
     def _enforce_every_project_max_number_students(self):
+        """
+        The method ensures that the number of allocated students doesn't exceed the capacity of the project.
+        """
         for project in self._projects:
             self._model.addConstr(
                 sum(self._studentProjectVars.all_students_with_project(project))
@@ -164,6 +221,8 @@ class _ProjectParticipationConstraint:
             )
 
     def _enforce_every_project_empty_or_has_minimum_number_students(self):
+        """
+        The method enforces that there are not to few students in the project"""
         for project in self._projects:
             self._model.addConstr(
                 sum(self._studentProjectVars.all_students_with_project(project))
@@ -175,6 +234,8 @@ class _ProjectParticipationConstraint:
             )
 
     def _enforce_vetos(self):
+        """
+        The method enforces that the student is not banned fromn the project"""
         for project in self._projects:
             self._model.addConstr(
                 sum(
@@ -187,6 +248,7 @@ class _ProjectParticipationConstraint:
             )
 
     def _enforce_maintaining_high_rating(self, student: Student, rating: int):
+        """ """
         for project in self._projects:
             if student.projects_ratings[project.id] < rating:
                 self._model.addConstr(
