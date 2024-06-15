@@ -1,10 +1,8 @@
 import math
-from collections import defaultdict
 
-import networkx as nx
-from data_schema import Donation, Solution
+from data_schema import Solution
 from database import TransplantDatabase
-from ortools.sat.python.cp_model import FEASIBLE, OPTIMAL, CpModel, CpSolver
+from ortools.sat.python.cp_model import CpSolver
 
 
 class CycleLimitingCrossoverTransplantSolver:
@@ -19,7 +17,6 @@ class CycleLimitingCrossoverTransplantSolver:
 
         self.solver = CpSolver()
         self.solver.parameters.log_search_progress = True
-
 
     def optimize(self, timelimit: float = math.inf) -> Solution:
         if timelimit <= 0.0:

@@ -123,7 +123,7 @@ class FractionalSolution:
             item.weight * taken
             for item, taken in zip(self.instance.items, self.selection)
         )
-    
+
     def copy(self) -> "FractionalSolution":
         """
         Create a copy of the fractional solution.
@@ -204,5 +204,3 @@ class BasicRelaxationSolver(RelaxationSolver):
             x0 == x1 for x0, x1 in zip(fixation, selection) if x0 is not None
         ), "Fixed part is not allowed to change."
         return FractionalSolution(instance, selection)
-
-

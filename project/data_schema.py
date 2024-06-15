@@ -4,7 +4,10 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class Student(BaseModel):
-    last_name: str = Field(description="The last name of the student", pattern=r"^[a-zA-Z]{2,}(?: [a-zA-Z]+)?$") # might need to allow special characters such as hyphens
+    last_name: str = Field(
+        description="The last name of the student",
+        pattern=r"^[a-zA-Z]{2,}(?: [a-zA-Z]+)?$",
+    )  # might need to allow special characters such as hyphens
     first_name: str = Field(pattern=r"^[A-Z][a-zA-Z]{1,}$")
     matr_number: int = Field(ge=0, le=9999999)
     projects_ratings: Dict[int, int]
@@ -13,7 +16,6 @@ class Student(BaseModel):
 
     def __hash__(self) -> int:
         return self.matr_number.__hash__()
-
 
     @field_validator("projects_ratings")
     @classmethod
@@ -59,7 +61,9 @@ class Project(BaseModel):
     @model_validator(mode="after")
     def check_capacities(self):
         if self.min_capacity > self.capacity:
-            raise ValueError(f"The minimum capacity {self.min_capacity} is bigger than the maximum capacity {self.capacity}.")
+            raise ValueError(
+                f"The minimum capacity {self.min_capacity} is bigger than the maximum capacity {self.capacity}."
+            )
         return self
 
 
@@ -83,7 +87,9 @@ class Instance(BaseModel):
         for friends in friend_groups:
             for friend in friends:
                 if friend not in student_matr_numbers:
-                    raise ValueError(f"Friend with matriculation number {friend} does not exist!")
+                    raise ValueError(
+                        f"Friend with matriculation number {friend} does not exist!"
+                    )
         return v
 
     @model_validator(mode="after")
@@ -91,15 +97,21 @@ class Instance(BaseModel):
         for student in self.students:
             for project_id in student.projects_ratings:
                 if project_id not in self.projects:
-                    raise ValueError(f"Invalid project ID {project_id} in student's project ratings.")
+                    raise ValueError(
+                        f"Invalid project ID {project_id} in student's project ratings."
+                    )
         return self
 
     @model_validator(mode="after")
     def check_number_of_students(self):
         number_of_students = len(self.students)
         sum_capacity = sum(project.capacity for project in self.projects.values())
-        if number_of_students > sum(project.capacity for project in self.projects.values()):
-            raise ValueError(f"The number of students {number_of_students} exceeds the sum of all project capacities {sum_capacity}!")
+        if number_of_students > sum(
+            project.capacity for project in self.projects.values()
+        ):
+            raise ValueError(
+                f"The number of students {number_of_students} exceeds the sum of all project capacities {sum_capacity}!"
+            )
         return self
 
     @model_validator(mode="after")
@@ -107,7 +119,9 @@ class Instance(BaseModel):
         for project in self.projects.values():
             for prohibited_student in project.veto:
                 if prohibited_student not in self.students:
-                    raise ValueError(f"Student with matriculation number {prohibited_student.matr_number} does not exist.")
+                    raise ValueError(
+                        f"Student with matriculation number {prohibited_student.matr_number} does not exist."
+                    )
         return self
 
 

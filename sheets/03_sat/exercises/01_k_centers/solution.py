@@ -1,9 +1,7 @@
-import math
-from typing import Dict, Iterable, List
+from typing import List
 
 import networkx as nx
 from pysat.solvers import Solver as SATSolver
-
 
 
 class KCentersSolver:
@@ -29,7 +27,6 @@ class KCentersSolver:
         # TODO: Implement me!
         centers = None
         return centers
-
 
     def solve(self, k: int) -> List[int]:
         """

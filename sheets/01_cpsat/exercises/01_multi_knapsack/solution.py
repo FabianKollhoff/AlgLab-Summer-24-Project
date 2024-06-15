@@ -1,9 +1,7 @@
-import itertools
 import math
-from typing import List
 
-from data_schema import Instance, Item, Solution
-from ortools.sat.python.cp_model import FEASIBLE, OPTIMAL, CpModel, CpSolver
+from data_schema import Instance, Solution
+from ortools.sat.python.cp_model import CpModel, CpSolver
 
 
 class MultiKnapsackSolver:
@@ -32,8 +30,6 @@ class MultiKnapsackSolver:
         self.solver = CpSolver()
         self.solver.parameters.log_search_progress = True
         # TODO: Implement me!
-
-
 
     def solve(self, timelimit: float = math.inf) -> Solution:
         """

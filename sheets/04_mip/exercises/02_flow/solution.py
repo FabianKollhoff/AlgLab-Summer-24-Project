@@ -4,7 +4,6 @@ from data_schema import Instance, Solution
 from gurobipy import GRB  # noqa: F401
 
 
-
 class MiningRoutingSolver:
     def __init__(self, instance: Instance) -> None:
         self.map = instance.map
