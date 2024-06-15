@@ -235,7 +235,8 @@ class _ProjectParticipationConstraint:
 
     def _enforce_vetos(self):
         """
-        The method enforces that the student is not banned fromn the project"""
+        The method enforces that the student is banned from the project
+        """
         for project in self._projects:
             self._model.addConstr(
                 sum(
@@ -388,7 +389,7 @@ class _ProgrammingObjective:
 
 class _FriendsObjective:
     """
-    A helper class to calculate the objective for the friendgroups.
+    A helper class to calculate the objective for the friendg roups.
     """
 
     def __init__(
@@ -464,11 +465,11 @@ class SepSolver:
             projects=self.projects,
             programmingVars=self._programmingVars,
         )
-
-        self._model.setObjective(
-            self._ratingObjective.get() + 0.3 * self._programmingObjective.get(),
-            gp.GRB.MAXIMIZE,
-        )
+        #self._friendsObjective = _FriendsObjective(
+        #    students=self.students,
+        #    projects=self.projects,
+        #    studentProjectVars=self._studentProjectVars,
+        #)
 
         self.students_no_min_rating = self.students_without_minimum_positive_ratings()
         self.current_best_solution = None
@@ -548,6 +549,24 @@ class SepSolver:
         """
 
         self._model.Params.lazyConstraints = 1
+
+        self._model.setObjective(
+            self._ratingObjective.get(),
+            gp.GRB.MAXIMIZE,
+        )
+
+        self._model.optimize()
+        if self._model.status == GRB.OPTIMAL:
+            self._model.addConstr(self._ratingObjective.get() >= self._model.getObjective().getValue() * 0.9)
+            self._model.setObjective(self._programmingObjective.get(),gp.GRB.MAXIMIZE,
+        )
+
+        #self._model.optimize()
+        #if self._model.status == GRB.OPTIMAL:
+        #    self._model.addConstr(self._programmingObjective.get() >= self._model.getObjective().getValue() * 0.9)
+        #    self._model.setObjective(self._friendsObjective.get(),gp.GRB.MAXIMIZE,
+        #)
+
         self._model.optimize()  # callback
         if self._model.status == GRB.OPTIMAL:
             if self.current_best_solution is None:
