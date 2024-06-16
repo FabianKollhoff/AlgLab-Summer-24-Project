@@ -3,11 +3,13 @@ import json
 import csv
 import numpy as np
 from ortools.sat.python import cp_model
-
+import math
 import random
 
+from data_schema import Instance, Project, Student
 
-class Generator():
+
+class Generator:
 
     def randomStudentType(self):
         rating = random.random()
@@ -45,10 +47,18 @@ class Generator():
     def randomProjectCapacity(self):
         capacity = random.randint(5, 16)
         self.sumProjectsCapacity += capacity
-        return capacity
+        min_capacity = random.randint(5, capacity)
+        return (capacity, min_capacity)
+
+    def genererateProgrammingRequirements(self):
+        return {"Python":random.randint(0,3), "Java":random.randint(0,3), "C/C++":random.randint(0,3), "PHP":random.randint(0,3), "SQL":random.randint(0,3)}
+
+    def generateProject(self, i):
+        capacity, min_capacity = self.randomProjectCapacity()
+        return Project(id=i, name=str(i), capacity=capacity, min_capacity=min_capacity, veto=self.generateVetos(), programming_requirements=self.genererateProgrammingRequirements())
 
     def generateProjects(self, number_projects, number_students):
-        projects = {i : Project(id=i, name=str(i), capacity=self.randomProjectCapacity()) for i in range(number_projects)}
+        projects = {i : self.generateProject(i) for i in range(number_projects)}
         while self.sumProjectsCapacity < number_students:
             for project in projects:
                 randomAdative = random.randint(1,6)
@@ -67,7 +77,7 @@ class Generator():
         skills = self.randomStudentType()
         skill_dict = {"Python": skills[0]}
         skill_dict.update({"Java": skills[1]})
-        skill_dict.update({"C++": skills[2]})
+        skill_dict.update({"C/C++": skills[2]})
         skill_dict.update({"SQL": skills[3]})
         skill_dict.update({"PHP": skills[4]})
         return skill_dict
@@ -75,11 +85,52 @@ class Generator():
     def generateStudents(self, number_students):
         students = []
         self.distribution = self.generateDistrubution(self.projects)
+        #generate the pre-defined friendgroups
+        friendships = self.generateFriendgroups(number_students)
         for i in range(number_students):
-            student = Student(last_name="Doe", first_name="Joe", matr_number=i, projects_ratings=self.generateProjectsRatings(), skills_ratings=self.generateSkillRatings())
+            student = Student(last_name="Doe", first_name="Joe", matr_number=i, projects_ratings={}, programming_language_ratings=self.generateSkillRatings(), friends=friendships[i])
             students.append(student)
         return students
     
+    def generateVetos(self):
+        prohibited_students = []
+        score = random.random()
+        if score <= 0.1:
+            prohibited_students = random.sample(self.students, math.ceil(math.log10(len(self.students))) + 1)
+        return prohibited_students
+
+    def generateRandomFriends(self, student_matr, number_students):
+        # smaple from 0-2 random matr_numbers as friends of student. Make sure own matr_number not in friends
+        num_friends = random.randint(0, 2)
+        #print(number_students, student_matr)
+        nums = list(range(number_students))
+        nums.remove(student_matr)
+
+        return random.sample(nums, num_friends)
+
+    def generateFriendgroups(self, number_students):
+        #alternative: after students are generated, generate friend groups and add them individually to students list. To make sure
+        # friend relationship is mutual. Have pre-generated dict (for every student give their friends)
+        # generate some friend group, make sure these groups dont overlap. Groups of size 2 or 3
+        nums = list(range(number_students))
+        #get 20 samples of distict groups of 2 or 3 students
+        groups = []
+        friends = {i: [] for i in nums}
+        for _i in range(20):
+            size = random.randint(2,3)
+            group = random.sample(nums, size)
+            for stu in group:
+                nums.remove(stu)
+            groups.append(group)
+        #add the friend relations to the friends dict
+        for group in groups:
+            for stu in group:
+                friends[stu] = [i for i in group if i != stu]
+
+        return friends
+
+
+
     def generateDistrubution(self, projects):
         number_projects = len(projects)
         
@@ -131,16 +182,17 @@ class Generator():
         
     def generateInstance(self, number_projects, number_students):
         self.sumProjectsCapacity = 0
+        self.students = self.generateStudents(number_students=number_students)
         self.projects = self.generateProjects(number_projects=number_projects, number_students=number_students)
         self.students = self.generateStudents(number_students=number_students)
         self.instance = Instance(
                 students=self.students,
                 projects=self.projects
             )
-        
+
         return self.instance
-    
-                
+
+
 
 g = Generator()
 
