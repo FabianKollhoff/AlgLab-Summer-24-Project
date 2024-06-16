@@ -96,7 +96,6 @@ class Generator():
         # Clamp ratings to be between 1 and 5
         average_ratings = np.clip(average_ratings, 1, 5)
         #print(average_ratings)
-        print({project: rating for project, rating in zip(projects, average_ratings)})
         return {project: self.calculateRatingProbabilities(rating) for project, rating in zip(projects, average_ratings)}
     
     def calculateRatingProbabilities(self, average_rating):
@@ -109,6 +108,12 @@ class Generator():
         p5 = model.NewIntVar(0, 100, 'p5')
         # ensure that probabilities add up to 1
         model.Add(p1 + p2 + p3 + p4 + p5 == 100)
+        # ensure that probabilities are not to small
+        model.Add(p1 >= 10)
+        model.Add(p2 >= 10)
+        model.Add(p3 >= 10)
+        model.Add(p4 >= 10)
+        model.Add(p5 >= 10)
         # minimize distance between sum of weighted probabilities and average_rating
         difference = model.NewIntVar(-10000, 10000, 'difference')
         abs_difference = model.NewIntVar(0, 10000, 'abs_difference')
