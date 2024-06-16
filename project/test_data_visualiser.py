@@ -32,7 +32,7 @@ def calculateDistribution(data, number_projects):
     
 def visualizeDistribution(projects):
     for id, rating in projects.items():
-        print(f"project: {id} ratings([5,4,3,2,1]): {rating}")
+        print(f"project: {id} ratings([1,2,3,4,5]): {rating}")
         print("###########################################################")  
 
 def plotAverages(average_scores):
