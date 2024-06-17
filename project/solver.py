@@ -245,7 +245,7 @@ class _ProjectParticipationConstraint:
 
     def _enforce_vetos(self):
         """
-        The method enforces that the student is banned from the project
+        The method enforces that the student is banned from the project.
         """
         for project in self._projects:
             self._model.addConstr(
