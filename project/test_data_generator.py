@@ -1,12 +1,9 @@
-from data_schema import Project, Student, Instance
-import json
-import csv
-import numpy as np
-from ortools.sat.python import cp_model
 import math
 import random
 
+import numpy as np
 from data_schema import Instance, Project, Student
+from ortools.sat.python import cp_model
 
 
 class Generator:
@@ -30,7 +27,7 @@ class Generator:
             # got here by copying homework
             skills = (4, 4, 4, 4, 4)
         return skills
-    
+
     def randomStudentRankingProject(self, project_distribution):
         rating = random.random()
         if rating <= project_distribution[0]:
@@ -42,7 +39,7 @@ class Generator:
         if rating <= project_distribution[0] + project_distribution[1] + project_distribution[2] + project_distribution[3]:
             return 4
         return 5
-    
+
 
     def randomProjectCapacity(self):
         capacity = random.randint(5, 16)
@@ -55,7 +52,7 @@ class Generator:
 
     def generateProject(self, i):
         capacity, min_capacity = self.randomProjectCapacity()
-        return Project(id=i, name=str(i), capacity=capacity, min_capacity=min_capacity, veto=self.generateVetos(), programming_requirements=self.genererateProgrammingRequirements())
+        return Project(id=i, name=str(i), capacity=capacity, min_capacity=min_capacity, veto=[], programming_requirements=self.genererateProgrammingRequirements())
 
     def generateProjects(self, number_projects, number_students):
         projects = {i : self.generateProject(i) for i in range(number_projects)}
@@ -72,7 +69,7 @@ class Generator:
 
     def generateProjectsRatings(self):
         return {project : self.randomStudentRankingProject(self.distribution[project]) for project in self.projects}
-    
+
     def generateSkillRatings(self):
         skills = self.randomStudentType()
         skill_dict = {"Python": skills[0]}
@@ -91,7 +88,7 @@ class Generator:
             student = Student(last_name="Doe", first_name="Joe", matr_number=i, projects_ratings={}, programming_language_ratings=self.generateSkillRatings(), friends=friendships[i])
             students.append(student)
         return students
-    
+
     def generateVetos(self):
         prohibited_students = []
         score = random.random()
@@ -137,7 +134,7 @@ class Generator:
         # Generate ratings using a normal distribution with a wider spread
         #average_ratings = np.random.normal(4.5, 1.0, number_projects)
         average_ratings = [3 for i in range(number_projects)]
-        
+
         # generate noise to increase spread
         jitter_amount = 2
         noise = np.random.uniform(low=-jitter_amount, high=jitter_amount, size=number_projects)
@@ -148,7 +145,7 @@ class Generator:
         average_ratings = np.clip(average_ratings, 1, 5)
         #print(average_ratings)
         return {project: self.calculateRatingProbabilities(rating) for project, rating in zip(projects, average_ratings)}
-    
+
     def calculateRatingProbabilities(self, average_rating):
         model = cp_model.CpModel()
         # define variables for probabilities, elevate the upper bound because we are working with integers
@@ -179,12 +176,16 @@ class Generator:
             total = solver.Value(p1) + solver.Value(p2) + solver.Value(p3) + solver.Value(p4) + solver.Value(p5)
             probabilities = [solver.Value(p1)/total,solver.Value(p2)/total, solver.Value(p3)/total, solver.Value(p4)/total, solver.Value(p5)/total]
         return probabilities
-        
+
     def generateInstance(self, number_projects, number_students):
         self.sumProjectsCapacity = 0
-        self.students = self.generateStudents(number_students=number_students)
+        #self.students = self.generateStudents(number_students=number_students)
         self.projects = self.generateProjects(number_projects=number_projects, number_students=number_students)
         self.students = self.generateStudents(number_students=number_students)
+        for student in self.students:
+            student.projects_ratings = self.generateProjectsRatings()
+        for project in self.projects:
+            self.projects[project].veto = self.generateVetos()
         self.instance = Instance(
                 students=self.students,
                 projects=self.projects
