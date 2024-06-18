@@ -13,19 +13,19 @@ class Generator:
         distribution = (0.2,0.1,0.4,0.1)
         if rating <= distribution[0]:
             # cracked student
-            skills = (2, 2, 2, 2, 2)
+            skills = (4, 4, 4, 4, 4)
         if rating <= distribution[0] + distribution[1]:
             # basic student
-            skills = (4, 2, 2, 3, 4)
+            skills = (1, 4, 4, 2, 1)
         if rating <= distribution[0] + distribution[1]+ distribution[2]:
             # python bro
-            skills = (2, 3, 3, 3, 4)
+            skills = (4, 2, 2, 2, 1)
         if rating <= distribution[0] + distribution[1] + distribution[2] + distribution[3]:
             # web developer
-            skills = (4, 3, 3, 2, 2)
+            skills = (1, 2, 3, 4, 4)
         if rating > distribution[0] + distribution[1] + distribution[2] + distribution[3]:
             # got here by copying homework
-            skills = (4, 4, 4, 4, 4)
+            skills = (1, 1, 1, 1, 1)
         return skills
 
     def randomStudentRankingProject(self, project_distribution):
