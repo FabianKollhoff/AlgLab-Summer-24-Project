@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import List
 
 import gurobipy as gp
 from data_schema import Instance, Project, Solution, Student
@@ -7,7 +7,7 @@ from gurobipy import GRB
 
 class _StudentProjectVars:
     """
-    A helper class to manage the gurobi variables for the studends and projects selection.
+    A helper class to manage the gurobi variables for the students and projects selection.
     """
 
     def __init__(
@@ -39,12 +39,14 @@ class _StudentProjectVars:
         Returns the variable assigned to the student and project.
         """
         return self.vars_student_in_project[(student, project_id)]["var"]
-    
+
     def x_matr(self, student_matr: int, project_id: int) -> gp.Var:
         """
         Returns the variable assigned to the student and project.
         """
-        return self.vars_student_in_project[(self.matnr_students[student_matr], project_id)]["var"]
+        return self.vars_student_in_project[
+            (self.matnr_students[student_matr], project_id)
+        ]["var"]
 
     def rating(self, student: Student, project_id: int):
         """
@@ -163,7 +165,7 @@ class _ProgrammingVars:
 
     def all_languages(self, student: Student, project: Project):
         """
-        Return all languages of the given students and projects
+        Return all languages of the given students and projects.
         """
         for programming_language in project.programming_requirements:
             if self.x(programming_language, student, programming_language) is not None:
@@ -179,7 +181,7 @@ class _ProgrammingVars:
 
     def for_each(self, func):
         """
-        Run the the given function for all students, projects and programming_languages and return the results in a form of a list.
+        Run the given function for all students, projects and programming languages and return the results in form of a list.
         """
         list = []
         for student in self._students:
@@ -190,14 +192,14 @@ class _ProgrammingVars:
 
     def for_each_student_and_project(self, func):
         """
-        Run the given function for all students and projects"""
+        Run the given function for all students and projects."""
         for student in self._students:
             for project in self._projects:
                 func(student, project)
 
     def for_each_project_with_programming_language(self, func):
         """
-        Run the given function for all projects and programming languages
+        Run the given function for all projects and programming languages.
         """
         list = []
         for project in self._projects:
@@ -217,12 +219,13 @@ class _ProjectParticipationConstraint:
         """
         for student in self._students:
             self._model.addConstr(
-                sum(self._studentProjectVars.all_projects_with_student(student=student)) == 1
+                sum(self._studentProjectVars.all_projects_with_student(student=student))
+                == 1
             )
 
     def _enforce_every_project_max_number_students(self):
         """
-        The method ensures that the number of allocated students doesn't exceed the capacity of the project.
+        The method ensures that the number of allocated students does not exceed the capacity of the project.
         """
         for project in self._projects:
             self._model.addConstr(
@@ -232,7 +235,7 @@ class _ProjectParticipationConstraint:
 
     def _enforce_every_project_empty_or_has_minimum_number_students(self):
         """
-        The method enforces that there are not to few students in the project"""
+        The method enforces that there are not too few students in the project."""
         for project in self._projects:
             self._model.addConstr(
                 sum(self._studentProjectVars.all_students_with_project(project))
@@ -265,22 +268,6 @@ class _ProjectParticipationConstraint:
                 self._model.addConstr(
                     sum([self._studentProjectVars.x(student, project)]) == 0
                 )
-
-    def _enforce_higher_rating(
-        self, students: List[Student], lowest_solution_rating: int
-    ):
-        """ """
-        return sum(
-            self._studentProjectVars.for_each_student_and_project(
-                lambda student, project: self._studentProjectVars.x(student, project)
-                if (
-                    self._studentProjectVars.rating(student, project)
-                    == lowest_solution_rating
-                    and student in students
-                )
-                else 0
-            )
-        )
 
     def __init__(
         self,
@@ -320,7 +307,7 @@ class _StudentProgrammingConstraint:
 
     def _enforce_maximum_number_roles_project_assigned(self):
         """
-        The method enforces that there are not to many roles assigned.
+        The method enforces that there are not too many roles assigned.
         """
         self._programmingVars.for_each_project_with_programming_language(
             lambda project, programming_language: self._model.addConstr(
@@ -349,7 +336,7 @@ class _StudentProgrammingConstraint:
 
 class _RatingObjective:
     """
-    A helper class to calculate to calculate the objective concerning the ratings of the students.
+    A helper class to calculate the objective concerning the ratings of the students.
     """
 
     def __init__(
@@ -399,7 +386,7 @@ class _ProgrammingObjective:
 
 class _FriendsObjective:
     """
-    A helper class to calculate the objective for the friendg roups.
+    A helper class to calculate the objective for the friend groups.
     """
 
     def __init__(
@@ -413,7 +400,7 @@ class _FriendsObjective:
         self._studentProjectVars = studentProjectVars
 
         self.relations = []
-        # here get a list of all friend relations as tuple (Student.matr_number,Student.matr_number). Make sure no duplicates are added
+        # here get a list of all friend relations as tuple (Student.matr_number,Student.matr_number). Make sure no duplicates are added.
         for student in self._students:
             for friend in student.friends:
                 if (friend, student.matr_number) not in self.relations:
@@ -431,12 +418,13 @@ class _FriendsObjective:
 
 class SepSolver:
     """
-    A solver to solve the SEP project student assignement incoperating project ratings, programmings skills and friend groups.
+    A solver to solve the SEP project student assignement incoporating project ratings, programmings skills and friend groups.
     """
 
     def __init__(self, instance: Instance):
         self.students = instance.students
         self.projects = list(instance.projects.values())
+        self.students_min_rating = self.students_with_minimum_positive_ratings()
 
         self._model = gp.Model()
 
@@ -466,7 +454,7 @@ class SepSolver:
         )
 
         self._ratingObjective = _RatingObjective(
-            students=self.students,
+            students=self.students_min_rating,  # TODO: test with instances
             projects=self.projects,
             studentProjectVars=self._studentProjectVars,
         )
@@ -481,7 +469,6 @@ class SepSolver:
             studentProjectVars=self._studentProjectVars,
         )
 
-        self.students_no_min_rating = self.students_without_minimum_positive_ratings()
         self.current_best_solution = None
 
     # if the student does not give a positive rating to at least 20 % of the projects, solver does not add constraints to prioritize their highest ratings
@@ -491,32 +478,17 @@ class SepSolver:
     def check_minimum_positive_ratings(self, student: Student) -> bool:
         return self.get_number_of_positive_ratings(student) >= 0.2 * len(self.projects)
 
-    def students_without_minimum_positive_ratings(self) -> List[Student]:
+    def students_with_minimum_positive_ratings(self) -> List[Student]:
         return [
             student
             for student in self.students
-            if self.check_minimum_positive_ratings(student) == False
+            if self.check_minimum_positive_ratings(student) is True
         ]
 
     def get_project_rating(self, student: Student, project_id: int) -> int:
         return student.projects_ratings[project_id]
 
-    def get_current_solution(self, in_callback: bool = False):
-        if in_callback:
-            projects = {project.id: [] for project in self.projects}
-            for project in self.projects:
-                for student in self.students:
-                    if (
-                        self._model.cbGetSolution(
-                            self._studentProjectVars.x(student, project)
-                        )
-                        > 0.5
-                    ):
-                        projects[project.id].append(student)
-                        print(f"{project.id}", student.matr_number)
-
-            return Solution(projects=projects)
-
+    def get_current_solution(self):
         projects = {project.id: [] for project in self.projects}
         for project in self.projects:
             for student in self.students:
@@ -526,40 +498,7 @@ class SepSolver:
 
         return Solution(projects=projects)
 
-    def get_solution_ratings(self, solution: Solution) -> Dict[Student, int]:
-        solution_ratings = {}
-        for project, students in solution.projects.items():
-            for student in students:
-                current_rating = self.get_project_rating(student, project)
-                solution_ratings[student] = current_rating
-        return solution_ratings
-
     def solve(self) -> Solution:
-        # reduce the number of lower ratings iteratively
-        """def callback(model, where):
-        if where == gp.GRB.Callback.MIPSOL:
-            solution = self.get_current_solution(in_callback=True)
-            solution_ratings = self.get_solution_ratings(solution)
-
-            sum_rating = 0
-            for student in solution_ratings:
-                sum_rating += solution_ratings[student]
-            print("Test sum:", sum_rating)
-
-            current_number_of_ratings = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0} #only counts the relevant students
-            optimize_students = []
-            #student complies with the minimum positive rating rule are considered for optimization
-            for student in solution_ratings:
-                if student not in self.students_no_min_rating:
-                    optimize_students.append(student)
-                    current_number_of_ratings[solution_ratings[student]] += 1
-            print("Current solution count:", current_number_of_ratings)
-            lowest_solution_rating = min((rating for rating, number in current_number_of_ratings.items() if number > 0), default=None)
-            #model.cbLazy(self._projectParticipation._enforce_higher_rating(optimize_students, lowest_solution_rating) <= current_number_of_ratings[lowest_solution_rating] - 1)
-        """
-
-        self._model.Params.lazyConstraints = 1
-
         self._model.setObjective(
             self._ratingObjective.get(),
             gp.GRB.MAXIMIZE,
@@ -567,28 +506,28 @@ class SepSolver:
 
         self._model.optimize()
         if self._model.status == GRB.OPTIMAL:
-            self._model.addConstr(self._ratingObjective.get() >= self._model.getObjective().getValue() * 0.9)
-            self._model.setObjective(self._programmingObjective.get(),gp.GRB.MAXIMIZE,
-        )
+            self._model.addConstr(
+                self._ratingObjective.get()
+                >= self._model.getObjective().getValue() * 0.9
+            )
+            self._model.setObjective(
+                self._programmingObjective.get(),
+                gp.GRB.MAXIMIZE,
+            )
 
         self._model.optimize()
         if self._model.status == GRB.OPTIMAL:
-            self._model.addConstr(self._programmingObjective.get() >= self._model.getObjective().getValue() * 0.9)
-            self._model.setObjective(self._friendsObjective.get(),gp.GRB.MAXIMIZE,
-        )
+            self._model.addConstr(
+                self._programmingObjective.get()
+                >= self._model.getObjective().getValue() * 0.9
+            )
+            self._model.setObjective(
+                self._friendsObjective.get(),
+                gp.GRB.MAXIMIZE,
+            )
 
-        self._model.optimize()  # callback
+        self._model.optimize()
         if self._model.status == GRB.OPTIMAL:
-            if self.current_best_solution is None:
-                self.current_best_solution = self.get_current_solution()
-                # only add constraint during the first time
-                student_ratings = self.get_solution_ratings(self.current_best_solution)
-                for student in student_ratings:
-                    if student not in self.students_no_min_rating:
-                        self._projectParticipation._enforce_maintaining_high_rating(
-                            student, student_ratings[student]
-                        )
-            else:
-                self.current_best_solution = self.get_current_solution()
+            self.current_best_solution = self.get_current_solution()
 
         return self.current_best_solution

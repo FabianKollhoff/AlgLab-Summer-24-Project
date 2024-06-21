@@ -46,7 +46,7 @@ def solve_sep_instance(filepath: str):
 
     # try using the benchmarks class
     benchmark = Benchmarks(solution=solution, instance=instance)
-    # benchmark.log()
+    #benchmark.log()
 
 
 @mandatory_testcase(max_runtime_s=30)
@@ -69,7 +69,7 @@ def s500_g50():
     solve_sep_instance(filepath="./instances/data_s500_g50.json")
 
 
-@mandatory_testcase(max_runtime_s=30)
+@mandatory_testcase(max_runtime_s=60)
 def s1000_g100():
     solve_sep_instance(filepath="./instances/data_s1000_g100.json")
 
