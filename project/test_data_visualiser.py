@@ -2,11 +2,13 @@ import json
 import matplotlib.pyplot as plt
 
 def readData(file_path):
+    # reads in the data of the json file we are interested in
     with open(file_path, 'r') as file:
         data = json.load(file)
     return data
 
 def calculateAverages(data):
+    # calculates the average score each project gets and returns it in a dict
     project_scores = {}
     project_counts = {}
     
@@ -21,6 +23,7 @@ def calculateAverages(data):
     return {project: project_scores[project] / project_counts[project] for project in project_scores}
 
 def calculateDistribution(data, number_projects):
+    # calculates the number of 1,2,3,4,5-ratings each project recieves
     projects = {str(i): [0,0,0,0,0] for i in range(number_projects)}
     for student in data["students"]:
         ratings = student["projects_ratings"]
@@ -31,11 +34,13 @@ def calculateDistribution(data, number_projects):
     return projects
     
 def visualizeDistribution(projects):
+    # visualizes the number of 1,2,3,4,5-ratings each project recieves
     for id, rating in projects.items():
         print(f"project: {id} ratings([1,2,3,4,5]): {rating}")
         print("###########################################################")  
 
 def plotAverages(average_scores):
+    # plots the average rating each project recieves in a bar chart (y-axis: average rating, x-axis: id of the project)
     projects = list(average_scores.keys())
     scores = list(average_scores.values())
     
