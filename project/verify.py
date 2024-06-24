@@ -48,6 +48,9 @@ def solve_sep_instance(filepath: str):
     benchmark = Benchmarks(solution=solution, instance=instance)
     #benchmark.log()
 
+    data = solution.model_dump_json(indent=2)
+    with open(f"solution/solution_of_{len(instance.projects)}_{len(instance.students)}.json", "w") as f:
+        f.write(data)
 
 @mandatory_testcase(max_runtime_s=30)
 def s100_g10():
