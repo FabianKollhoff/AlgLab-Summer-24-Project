@@ -16,5 +16,3 @@ class BranchingStrategy(ABC):
         """
         Abstract method for making branching decisions.
         """
-
-

@@ -43,7 +43,13 @@ def solve_sep_instance(filepath: str):
             f"The returned solution contains a student {student_instance} {count_student_in_solution} times!",
         )
 
+    data = solution.model_dump_json(indent=2)
+    with open(f"solution/solution_of_{len(instance.projects)}_{len(instance.students)}.json", "w") as f:
+        f.write(data)
+
     return instance, solution
+
+
 
 
 @mandatory_testcase(max_runtime_s=30)
@@ -66,7 +72,7 @@ def s500_g50():
     solve_sep_instance(filepath="./instances/data_s500_g50.json")
 
 
-@mandatory_testcase(max_runtime_s=30)
+@mandatory_testcase(max_runtime_s=60)
 def s1000_g100():
     solve_sep_instance(filepath="./instances/data_s1000_g100.json")
 

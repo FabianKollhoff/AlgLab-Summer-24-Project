@@ -88,7 +88,7 @@ file here._
    into your model, you need to restrict the size of each exchange cycle.
    Implement a new solver in `solver_small_cycles.py` that allows cycles of size *at most* 3 (i.e., 3 transplantations) and verify it using
    `python3 verify_small_cycles.py`.
-   
+
    *Hint:* Start with the most obvious model using the `simple_cycle` function you find in the references. Do not try to use the model from the previous task.
 
 ## References

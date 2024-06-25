@@ -1,4 +1,3 @@
-import math
 import typing
 from abc import ABC, abstractmethod
 
@@ -18,5 +17,3 @@ class Heuristics(ABC):
         """
         Abstract method to search for a feasible solution.
         """
-
-

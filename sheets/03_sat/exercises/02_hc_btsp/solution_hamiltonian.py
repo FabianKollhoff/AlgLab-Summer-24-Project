@@ -1,4 +1,3 @@
-import itertools
 from typing import List, Optional, Tuple
 
 import networkx as nx
@@ -11,7 +10,6 @@ class HamiltonianCycleModel:
         self.solver = SATSolver("Minicard")
         self.assumptions = []
         # TODO: Implement me!
-
 
     def solve(self) -> Optional[List[Tuple[int, int]]]:
         """
