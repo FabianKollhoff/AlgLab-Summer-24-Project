@@ -14,6 +14,7 @@ class ExampleGenerator:
         self.project_ratings = {}
         self.skills = {}
 
+        # read in csv file
         if not os.path.isfile(file_path):
             raise FileNotFoundError(f"No such file: '{file_path}'")
         with open(file_path, newline="", encoding="utf-8") as csvfile:
@@ -33,6 +34,7 @@ class ExampleGenerator:
         return capacity
 
     def format_projects(self):
+        # formats the data so that the wishes are in stored in %wunsch: id of project
         for id, row in self.data.items():
             project_number_choice_1 = "".join(filter(str.isdigit, row["Erstwunsch"]))
             self.data[id]["Erstwunsch"] = int(project_number_choice_1)
@@ -44,6 +46,7 @@ class ExampleGenerator:
             self.data[id]["Drittwunsch"] = int(project_number_choice_3)
 
     def format_skills(self):
+        # formats the skills so that every language is now stored separately
         for id, row in self.data.items():
             if "Kenntnisse" in row:
                 languages = row["Kenntnisse"].split("#")
@@ -56,6 +59,7 @@ class ExampleGenerator:
                 self.data[id]["Kenntnisse"] = language_proficiency
 
     def projects_to_ratings(self, num_projects):
+        # formats the data from a wish format to a rating format
         rating = random.random()
         for id, row in self.data.items():
             student_ratings = {}
@@ -78,6 +82,7 @@ class ExampleGenerator:
             self.project_ratings.update({id: student_ratings})
 
     def skills_to_ratings(self):
+        # formats data from a anfänger/fortgeschritten rating to a number-based rating
         for id, row in self.data.items():
             student_skills = {}
             knowledge = row["Kenntnisse"]

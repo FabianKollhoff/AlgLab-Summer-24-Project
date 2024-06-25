@@ -8,6 +8,7 @@ from ortools.sat.python import cp_model
 
 class Generator:
     def randomStudentType(self):
+         # create a random type of student. types differ in their capabilities in different programming languages
         rating = random.random()
         distribution = (0.2, 0.1, 0.4, 0.1)
         if rating <= distribution[0]:
@@ -38,6 +39,7 @@ class Generator:
         return skills
 
     def randomStudentRankingProject(self, project_distribution):
+        # students give a project a random rating, depending on the probabilities calculated in calculateRatingProbabilities()
         rating = random.random()
         if rating <= project_distribution[0]:
             return 1
@@ -105,6 +107,7 @@ class Generator:
         }
 
     def generateSkillRatings(self):
+        # create a dict consisting of all programming languages and the skill level of the student
         skills = self.randomStudentType()
         skill_dict = {"Python": skills[0]}
         skill_dict.update({"Java": skills[1]})
@@ -115,6 +118,7 @@ class Generator:
 
     def generateStudents(self, number_students):
         students = []
+        # generate distribution of average ratings
         self.distribution = self.generateDistribution(self.projects)
         # generate the pre-defined friendgroups
         friendships = self.generateFriendgroups(number_students)
@@ -172,10 +176,10 @@ class Generator:
         return friends
 
     def generateDistribution(self, projects):
+        # generate a random distribution of the average rating each project gets from the students
         number_projects = len(projects)
 
-        # Generate ratings using a normal distribution with a wider spread
-        # average_ratings = np.random.normal(4.5, 1.0, number_projects)
+        # start with an average rating of 3
         average_ratings = [3 for i in range(number_projects)]
 
         # generate noise to increase spread
@@ -183,12 +187,11 @@ class Generator:
         noise = np.random.uniform(
             low=-jitter_amount, high=jitter_amount, size=number_projects
         )
-        # print(f"noise: {noise}")
+        # add noise to the average rating to create a diverse number of average ratings
         average_ratings = average_ratings + noise
 
         # Clamp ratings to be between 1 and 5
         average_ratings = np.clip(average_ratings, 1, 5)
-        # print(average_ratings)
         return {
             project: self.calculateRatingProbabilities(rating)
             for project, rating in zip(projects, average_ratings)
@@ -223,6 +226,7 @@ class Generator:
         solver = cp_model.CpSolver()
         status = solver.Solve(model)
         probabilities = []
+        # if feasible, return the probabillities of each rating
         if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
             total = (
                 solver.Value(p1)
