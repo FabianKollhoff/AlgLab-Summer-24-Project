@@ -1,6 +1,7 @@
 from _alglab_utils import CHECK, main, mandatory_testcase
 from data_schema import Instance
 from solver import SepSolver
+from benchmarks import Benchmarks
 
 
 def solve_sep_instance(filepath: str):
@@ -42,7 +43,8 @@ def solve_sep_instance(filepath: str):
             count_student_in_solution == 1,
             f"The returned solution contains a student {student_instance} {count_student_in_solution} times!",
         )
-
+    benchmark = Benchmarks(solution=solution, instance=instance)
+    benchmark.log()
     return instance, solution
 
 
