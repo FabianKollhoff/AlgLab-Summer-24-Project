@@ -18,7 +18,7 @@ class Benchmarks(BaseModel):
 
         # self.log_median_group_size()
 
-        # self.log_avg_proj_rating()
+        self.log_avg_proj_rating()
 
         # self.log_avg_rating()
 
@@ -27,7 +27,7 @@ class Benchmarks(BaseModel):
 
         # TODO: log graph of friend relations that were (not) fulfilled
         #self.log_friend_graph()
-        self.log_programming_requirements()
+        #self.log_programming_requirements()
 
     def log_rating_sums(self):
         # plot bar chart for student ratings in solution
@@ -147,7 +147,7 @@ class Benchmarks(BaseModel):
     def log_programming_requirements(self):
         # in solution: FOr each project log for each programming language if requirement was met
         # pro language 2 bar charts. Links requirement für language, rechts anzahl students mit skill > 1 in lang
-        # pro lang: Prozentuale auslastung des requirements
+        # pro lang: summe der vergebenen skill punkte (nur studenten mit skill > 1)
         languages = [lang for lang in self.instance.students[0].programming_language_ratings.keys()]
         for proj in self.solution.projects:
             #get list of all requirements
@@ -157,12 +157,12 @@ class Benchmarks(BaseModel):
             ax  = plt.subplot()
             for lang, req in self.instance.projects[proj].programming_requirements.items():
                 # get number of students with language skill for this lang
-                num_stu_with_skill = sum(1 for stu in self.solution.projects[proj] if stu.programming_language_ratings[lang] > 3)
+                num_stu = sum(1 for stu in self.solution.projects[proj] if stu.programming_language_ratings[lang] > 1)
                 reqs.append(req)
-                num_students_with_skill.append(num_stu_with_skill)
+                num_students_with_skill.append(num_stu)
             x = list(range(len(languages)))
-            ax.bar([el - 0.2 for el in x], reqs, width=0.4, color='b', align='center')
-            ax.bar([el + 0.2 for el in x], num_students_with_skill, width=0.4, color='r', align='center')
+            ax.bar([el - 0.2 for el in x], reqs, width=0.4, color='b', align='center', label="re")
+            ax.bar([el + 0.2 for el in x], num_students_with_skill, width=0.4, color='r', align='center', label="num students")
             ax.set_title("Programming requirements for Project. B=Required, R=Num students")
             plt.xticks(x, languages)
             plt.show()
