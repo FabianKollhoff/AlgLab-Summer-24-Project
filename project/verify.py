@@ -1,6 +1,7 @@
 from _alglab_utils import CHECK, main, mandatory_testcase
 from data_schema import Instance
 from solver import SepSolver
+from benchmarks import Benchmarks
 
 
 def solve_sep_instance(filepath: str):

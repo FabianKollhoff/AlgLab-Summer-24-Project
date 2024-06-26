@@ -36,8 +36,8 @@ if authentication_status:
         benchmark = Benchmarks(solution=solution, instance=instance)
         fig_rating = benchmark.log_rating_sums()
         st.pyplot(fig_rating)
-
-        # wip: buggy appearance
+        #fig_programming = benchmark.log_programming_requirements()
+        #st.pyplot(fig_programming)
         #fig_friend = benchmark.log_friend_graph()
         #st.pyplot(fig_friend)
         #fig_proj_util = benchmark.log_proj_util()
