@@ -76,6 +76,22 @@ def s500_g50():
 def s1000_g100():
     solve_sep_instance(filepath="./instances/data_s1000_g100.json")
 
+@mandatory_testcase(max_runtime_s=60)
+def worst_case_uniform_requirements():
+    solve_sep_instance(filepath="./instances/data_worst_case_uniform_requirements.json")
+    
+@mandatory_testcase(max_runtime_s=60)
+def worst_case_extreme_ratings_5():
+    solve_sep_instance(filepath="./instances/data_worst_case_extreme_rating_5.json")
+    
+@mandatory_testcase(max_runtime_s=60)
+def worst_case_extreme_ratings_1():
+    solve_sep_instance(filepath="./instances/data_worst_case_extreme_rating_1.json")
+    
+@mandatory_testcase(max_runtime_s=60)
+def worst_case_extreme_vetos():
+    solve_sep_instance(filepath="./instances/data_worst_case_extreme_vetos.json")
+
 
 if __name__ == "__main__":
     main()

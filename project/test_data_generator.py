@@ -162,7 +162,7 @@ class Generator:
         # get 20 samples of distict groups of 2 or 3 students
         groups = []
         friends = {i: [] for i in nums}
-        for _i in range(20):
+        for _i in range(10):
             size = random.randint(2, 3)
             group = random.sample(nums, size)
             for stu in group:
