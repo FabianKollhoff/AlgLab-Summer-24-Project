@@ -391,6 +391,7 @@ class _FriendsObjective:
 
     def __init__(
         self,
+        model,
         students: List[Student],
         projects: List[Project],
         studentProjectVars: _StudentProjectVars,
@@ -403,16 +404,19 @@ class _FriendsObjective:
         # here get a list of all friend relations as tuple (Student.matr_number,Student.matr_number). Make sure no duplicates are added.
         for student in self._students:
             for friend in student.friends:
-                if (friend, student.matr_number) not in self.relations:
-                    self.relations.append((student.matr_number, friend))
+                if friend != student.matr_number:
+                    for proj in self._projects:
+                        relation = model.addVar(
+                            vtype=gp.GRB.BINARY, name=f"relation_{student.matr_number}_{friend}"
+                        )
+                        self.relations.append(relation)
+                        model.addConstr(relation<=self._studentProjectVars.x_matr(student.matr_number, proj))
+                        model.addConstr(relation<= self._studentProjectVars.x_matr(friend, proj))
 
     def get(self):
         # return sum of all friend relations
         return sum(
-            self._studentProjectVars.x_matr(stu_a, proj)
-            * self._studentProjectVars.x_matr(stu_b, proj)
-            for stu_a, stu_b in self.relations
-            for proj in self._projects
+            relation for relation in self.relations
         )
 
 
@@ -464,6 +468,7 @@ class SepSolver:
             programmingVars=self._programmingVars,
         )
         self._friendsObjective = _FriendsObjective(
+            model=self._model,
             students=self.students,
             projects=self.projects,
             studentProjectVars=self._studentProjectVars,
