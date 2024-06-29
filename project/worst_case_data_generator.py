@@ -264,7 +264,7 @@ class Generator():
             capacity=capacity,
             min_capacity=min_capacity,
             veto=[],
-            programming_requirements=self.genererateProgrammingRequirements(),
+            programming_requirements=self.genererateUniformProgrammingRequirements("Python"),
         )
     'worst case method: uniform skill requirements'    
     def generateUniformRequirementsProjects(self, number_projects, number_students):
