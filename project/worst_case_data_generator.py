@@ -393,25 +393,25 @@ class Generator():
 g = Generator()
 # generate uniform skill requirements
 data1 = g.generateUniformRequirementsInstance(
-        number_students=20, number_projects=200
+        number_students=100, number_projects=1000
     ).model_dump_json(indent=2)
 with open(f"instances/data_worst_case_uniform_requirements.json", "w") as f:
         f.write(data1)
 # generate extreme rating 5
 data2 = g.generateExtremeInstanceFive(
-        number_students=20, number_projects=200
+        number_students=100, number_projects=1000
     ).model_dump_json(indent=2)
 with open(f"instances/data_worst_case_extreme_rating_5.json", "w") as f:
         f.write(data2)
 # generate extreme rating 1
 data3 = g.generateExtremeInstanceOne(
-        number_students=20, number_projects=200
+        number_students=100, number_projects=1000
     ).model_dump_json(indent=2)
 with open(f"instances/data_worst_case_extreme_rating_1.json", "w") as f:
         f.write(data3)
 # generate extreme vetos
 data4 = g.generateExtremeVetoInstance(
-        number_students=20, number_projects=200
+        number_students=100, number_projects=1000
     ).model_dump_json(indent=2)
 with open(f"instances/data_worst_case_extreme_vetos.json", "w") as f:
         f.write(data4)
