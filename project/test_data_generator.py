@@ -10,7 +10,7 @@ class Generator:
     def randomStudentType(self):
          # create a random type of student. types differ in their capabilities in different programming languages
         rating = random.random()
-        distribution = (0.2, 0.1, 0.4, 0.1)
+        distribution = (0.2, 0.2, 0.2, 0.2)
         if rating <= distribution[0]:
             # cracked student
             skills = (4, 4, 4, 4, 4)
@@ -123,6 +123,8 @@ class Generator:
         # generate the pre-defined friendgroups
         friendships = self.generateFriendgroups(number_students)
         for i in range(number_students):
+            if i % 60 == 0:
+                self.distribution = self.generateDistribution(self.projects)
             student = Student(
                 last_name="Doe",
                 first_name="Joe",
@@ -208,11 +210,11 @@ class Generator:
         # ensure that probabilities add up to 1
         model.Add(p1 + p2 + p3 + p4 + p5 == 100)
         # ensure that probabilities are not to small
-        model.Add(p1 >= 10)
-        model.Add(p2 >= 10)
-        model.Add(p3 >= 10)
-        model.Add(p4 >= 10)
-        model.Add(p5 >= 10)
+        model.Add(p1 >= 0)
+        model.Add(p2 >= 0)
+        model.Add(p3 >= 5)
+        model.Add(p4 >= 5)
+        model.Add(p5 >= 80)
         # minimize distance between sum of weighted probabilities and average_rating
         difference = model.NewIntVar(-10000, 10000, "difference")
         abs_difference = model.NewIntVar(0, 10000, "abs_difference")
@@ -261,7 +263,7 @@ class Generator:
 
 g = Generator()
 
-instance_sizes = [(10, 100), (20, 200), (30, 300), (50, 500), (100, 1000)]
+instance_sizes = [(10, 100), (20, 200), (30, 300), (50, 500), (100, 1000), (50, 1000)]
 
 for instance_size in instance_sizes:
     number_projects, number_students = instance_size

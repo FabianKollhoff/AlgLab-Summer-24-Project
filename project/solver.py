@@ -99,7 +99,7 @@ class SepSolver:
         if self._model.status == GRB.OPTIMAL:
             self._model.addConstr(
                 self._ratingObjective.get()
-                >= self._model.getObjective().getValue() * 0.9
+                >= self._model.getObjective().getValue() * 1
             )
             self._model.setObjective(
                 self._programmingObjective.get(),
@@ -110,7 +110,7 @@ class SepSolver:
         if self._model.status == GRB.OPTIMAL:
             self._model.addConstr(
                 self._programmingObjective.get()
-                >= self._model.getObjective().getValue() * 0.9
+                >= self._model.getObjective().getValue() * 0.99
             )
             self._model.setObjective(
                 self._friendsObjective.get(),

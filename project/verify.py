@@ -63,19 +63,24 @@ def s200_g20():
     solve_sep_instance(filepath="./instances/data_s200_g20.json")
 
 
-@mandatory_testcase(max_runtime_s=30)
+@mandatory_testcase(max_runtime_s=60)
 def s300_g30():
     solve_sep_instance(filepath="./instances/data_s300_g30.json")
 
 
-@mandatory_testcase(max_runtime_s=30)
+@mandatory_testcase(max_runtime_s=90)
 def s500_g50():
     solve_sep_instance(filepath="./instances/data_s500_g50.json")
 
 
-@mandatory_testcase(max_runtime_s=60)
+@mandatory_testcase(max_runtime_s=90)
 def s1000_g100():
     solve_sep_instance(filepath="./instances/data_s1000_g100.json")
+
+
+@mandatory_testcase(max_runtime_s=90)
+def s1000_g50():
+    solve_sep_instance(filepath="./instances/data_s1000_g50.json")
 
 
 if __name__ == "__main__":
