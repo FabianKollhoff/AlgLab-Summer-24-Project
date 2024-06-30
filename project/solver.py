@@ -4,8 +4,9 @@ import gurobipy as gp
 from data_schema import Instance, Project, Solution, Student
 from gurobipy import GRB
 
-from student_utils import _StudentProjectVars, _ProjectParticipationConstraint, _RatingObjective, _EmptyProjectVars, _ProgrammingVars, _StudentProgrammingConstraint, _ProgrammingObjective, _FriendsObjective
-
+from solver_constraints import _StudentProjectVars, _ProjectParticipationConstraint, _StudentProgrammingConstraint
+from solver_objectives import _ProgrammingObjective, _RatingObjective, _FriendsObjective
+from solver_vars import _ProgrammingVars,_StudentProjectVars,_EmptyProjectVars
 class SepSolver:
     """
     A solver to solve the SEP project student assignement incoporating project ratings, programmings skills and friend groups.
