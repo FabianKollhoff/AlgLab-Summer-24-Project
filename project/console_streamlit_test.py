@@ -6,5 +6,4 @@ result = subprocess.Popen(["python3 verify.py s1000_g100"], stdout=subprocess.PI
 stdout, stderr = result.communicate()
 
 # Display the terminal output
-st.text("TEST")
 st.text('\n'.join(stdout.decode().split('\n')[1:][:-1]))
