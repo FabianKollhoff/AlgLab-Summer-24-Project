@@ -1,0 +1,11 @@
+credentials:
+  usernames:
+    admin:
+      email: admin@tu-braunschweig.de
+      name: Admin
+      password: admin # can use hashed password, this is just a dummy password for demonstration purposes
+
+cookie:
+  expiry_days: 30
+  key: sep
+  name: sep_cookie

@@ -18,15 +18,16 @@ class Benchmarks(BaseModel):
 
         # self.log_median_group_size()
 
-        # self.log_avg_proj_rating()
+        self.log_avg_proj_rating()
 
-        # self.log_agv_rating()
+        # self.log_avg_rating()
 
-        self.log_rating_sums()
+        # self.log_rating_sums()
         # TODO: log the number of partner requests that were fulfilled
 
         # TODO: log graph of friend relations that were (not) fulfilled
-        self.log_friend_graph()
+        #self.log_friend_graph()
+        #self.log_programming_requirements()
 
     def log_rating_sums(self):
         # plot bar chart for student ratings in solution
@@ -42,8 +43,10 @@ class Benchmarks(BaseModel):
         plt.bar_label(barplot, labels=y, label_type="edge")
         plt.title("Occurence of rating in solution")
         plt.show()
+        # get current figure
+        return plt.gcf()
 
-    def log_agv_rating(self):
+    def log_avg_rating(self):
         # log the average rating of students in the solution
         num_students = len(self.instance.students)
         avg_rating_per_student = (
@@ -75,6 +78,7 @@ class Benchmarks(BaseModel):
         plt.bar(x, y)
         plt.title("Average rating of students in project")
         plt.show()
+        return plt.gcf()
 
     def log_median_group_size(self):
         # log the median group size
@@ -103,6 +107,7 @@ class Benchmarks(BaseModel):
         plt.bar(x, y)
         plt.title("Utilization of project capacities")
         plt.show()
+        return plt.gcf()
 
     def log_avg_util(self):
         # compute average utilazation of project capacities
@@ -137,6 +142,30 @@ class Benchmarks(BaseModel):
         )
         plt.title(f"Friend graph. G:{num_greens} R:{num_reds}")
         plt.show()
+        return plt.gcf()
+
+    def log_programming_requirements(self):
+        # in solution: For each project log for each programming language if requirement was met.
+        # per language 2 bar charts: On the left requirement for language, on the right number of students with skill > 1 for respective language.
+        languages = list(self.instance.students[0].programming_language_ratings.keys())
+        for proj in self.solution.projects:
+            #get list of all requirements
+            reqs = []
+            num_students_with_skill = []
+
+            ax  = plt.subplot()
+            for lang, req in self.instance.projects[proj].programming_requirements.items():
+                # get number of students with language skill for this lang
+                num_stu = sum(1 for stu in self.solution.projects[proj] if stu.programming_language_ratings[lang] > 1)
+                reqs.append(req)
+                num_students_with_skill.append(num_stu)
+            x = list(range(len(languages)))
+            ax.bar([el - 0.2 for el in x], reqs, width=0.4, color='b', align='center', label="re")
+            ax.bar([el + 0.2 for el in x], num_students_with_skill, width=0.4, color='r', align='center', label="num students")
+            ax.set_title("Programming requirements for Project. B=Required, R=Num students")
+            plt.xticks(x, languages)
+            plt.show()
+        return plt.gcf()
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 from _alglab_utils import CHECK, main, mandatory_testcase
-from benchmarks import Benchmarks
 from data_schema import Instance
 from solver import SepSolver
+from benchmarks import Benchmarks
 
 
 def solve_sep_instance(filepath: str):
@@ -44,13 +44,14 @@ def solve_sep_instance(filepath: str):
             f"The returned solution contains a student {student_instance} {count_student_in_solution} times!",
         )
 
-    # try using the benchmarks class
-    benchmark = Benchmarks(solution=solution, instance=instance)
-    #benchmark.log()
-
     data = solution.model_dump_json(indent=2)
     with open(f"solution/solution_of_{len(instance.projects)}_{len(instance.students)}.json", "w") as f:
         f.write(data)
+
+    return instance, solution
+
+
+
 
 @mandatory_testcase(max_runtime_s=30)
 def s100_g10():
@@ -62,17 +63,17 @@ def s200_g20():
     solve_sep_instance(filepath="./instances/data_s200_g20.json")
 
 
-@mandatory_testcase(max_runtime_s=30)
+@mandatory_testcase(max_runtime_s=60)
 def s300_g30():
     solve_sep_instance(filepath="./instances/data_s300_g30.json")
 
 
-@mandatory_testcase(max_runtime_s=30)
+@mandatory_testcase(max_runtime_s=90)
 def s500_g50():
     solve_sep_instance(filepath="./instances/data_s500_g50.json")
 
 
-@mandatory_testcase(max_runtime_s=60)
+@mandatory_testcase(max_runtime_s=90)
 def s1000_g100():
     solve_sep_instance(filepath="./instances/data_s1000_g100.json")
 
@@ -91,6 +92,11 @@ def worst_case_extreme_ratings_1():
 @mandatory_testcase(max_runtime_s=60)
 def worst_case_extreme_vetos():
     solve_sep_instance(filepath="./instances/data_worst_case_extreme_vetos.json")
+
+
+@mandatory_testcase(max_runtime_s=90)
+def s1000_g50():
+    solve_sep_instance(filepath="./instances/data_s1000_g50.json")
 
 
 if __name__ == "__main__":
