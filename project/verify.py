@@ -1,7 +1,7 @@
 from _alglab_utils import CHECK, main, mandatory_testcase
+from benchmarks import Benchmarks
 from data_schema import Instance
 from solver import SepSolver
-from benchmarks import Benchmarks
 
 
 def solve_sep_instance(filepath: str):
@@ -80,15 +80,15 @@ def s1000_g100():
 @mandatory_testcase(max_runtime_s=60)
 def worst_case_uniform_requirements():
     solve_sep_instance(filepath="./instances/data_worst_case_uniform_requirements.json")
-    
+
 @mandatory_testcase(max_runtime_s=60)
 def worst_case_extreme_ratings_5():
     solve_sep_instance(filepath="./instances/data_worst_case_extreme_rating_5.json")
-    
+
 @mandatory_testcase(max_runtime_s=60)
 def worst_case_extreme_ratings_1():
     solve_sep_instance(filepath="./instances/data_worst_case_extreme_rating_1.json")
-    
+
 @mandatory_testcase(max_runtime_s=60)
 def worst_case_extreme_vetos():
     solve_sep_instance(filepath="./instances/data_worst_case_extreme_vetos.json")

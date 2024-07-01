@@ -1,5 +1,6 @@
-import streamlit as st
 import re
+
+import streamlit as st
 from data_schema import Student
 from streamlit.components.v1 import html
 
@@ -93,11 +94,10 @@ with st.form("my_form"):
     )
     #st.form_submit_button("Absenden", on_click=show_confirmation_message)
     submitted = st.form_submit_button("Absenden")
-    if submitted:
-        if validate_inputs(first_name, last_name, matr_number):
-            st.write("Vorname:", first_name)
-            st.write("Nachname:", last_name)
-            st.write("Matrikelnummer:", matr_number)
-            st.write("Studiengang:", programme)
-            st.write("Projektinteressen:", projects_ratings)
-            show_confirmation_message()
+    if submitted and validate_inputs(first_name, last_name, matr_number):
+        st.write("Vorname:", first_name)
+        st.write("Nachname:", last_name)
+        st.write("Matrikelnummer:", matr_number)
+        st.write("Studiengang:", programme)
+        st.write("Projektinteressen:", projects_ratings)
+        show_confirmation_message()

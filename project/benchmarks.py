@@ -72,7 +72,7 @@ class Benchmarks(BaseModel):
             ratings.append(avg_rating)
             # logger.info('The average student rating of project %s is: %f', self.instance.projects[proj].name, avg_rating)
         # x axis are the projects
-        projs = [i for i in self.solution.projects]
+        projs = list(self.solution.projects)
         x = np.array(projs)
         y = np.array(ratings)
         plt.bar(x, y)
@@ -101,7 +101,7 @@ class Benchmarks(BaseModel):
                 / self.instance.projects[proj].capacity
             )
         # create plot
-        projs = [i for i in self.solution.projects]
+        projs = list(self.solution.projects)
         x = np.array(projs)
         y = np.array(utils)
         plt.bar(x, y)

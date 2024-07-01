@@ -1,8 +1,8 @@
 from typing import List
 
 import gurobipy as gp
-from data_schema import Instance, Project, Solution, Student
-from gurobipy import GRB
+from data_schema import Project, Student
+
 
 class _StudentProjectVars:
     """

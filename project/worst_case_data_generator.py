@@ -1,16 +1,18 @@
+import math
+import random
+
+import numpy as np
 from data_schema import Instance, Project, Student
 from ortools.sat.python import cp_model
-import numpy as np
-import random
-import math
 
-class Generator():
+
+class Generator:
     def randomProjectCapacity(self):
         capacity = random.randint(5, 16)
         self.sumProjectsCapacity += capacity
         min_capacity = random.randint(5, capacity)
         return (capacity, min_capacity)
-    
+
     def genererateProgrammingRequirements(self):
         return {
             "Python": random.randint(0, 3),
@@ -19,7 +21,7 @@ class Generator():
             "PHP": random.randint(0, 3),
             "SQL": random.randint(0, 3),
         }
-    
+
     def generateNormalProject(self, i):
         capacity, min_capacity = self.randomProjectCapacity()
         return Project(
@@ -30,7 +32,7 @@ class Generator():
             veto=[],
             programming_requirements=self.genererateProgrammingRequirements(),
         )
-        
+
     def generateNormalProjects(self, number_projects, number_students):
         projects = {i: self.generateNormalProject(i) for i in range(number_projects)}
         while self.sumProjectsCapacity < number_students:
@@ -42,9 +44,9 @@ class Generator():
                     break
         print(self.sumProjectsCapacity)
         return projects
-    
+
     def randomStudentType(self):
-         # create a random type of student. types differ in their capabilities in different programming languages
+         # create a random type of student, types differ in their capabilities in different programming languages
         rating = random.random()
         distribution = (0.2, 0.1, 0.4, 0.1)
         if rating <= distribution[0]:
@@ -97,7 +99,7 @@ class Generator():
         ):
             return 4
         return 5
-    
+
     def generateSkillRatings(self):
         # create a dict consisting of all programming languages and the skill level of the student
         skills = self.randomStudentType()
@@ -107,7 +109,7 @@ class Generator():
         skill_dict.update({"SQL": skills[3]})
         skill_dict.update({"PHP": skills[4]})
         return skill_dict
-    
+
     def generateDistribution(self, projects):
         # generate a random distribution of the average rating each project gets from the students
         number_projects = len(projects)
@@ -176,7 +178,7 @@ class Generator():
                 solver.Value(p5) / total,
             ]
         return probabilities
-    
+
     def generateNormalStudents(self, number_students):
         students = []
         # generate distribution of average ratings
@@ -194,7 +196,7 @@ class Generator():
             )
             students.append(student)
         return students
-    
+
     def generateRandomFriends(self, student_matr, number_students):
         # sample from 0-2 random matr_numbers as friends of student. Make sure own matr_number not in friends
         num_friends = random.randint(0, 2)
@@ -202,7 +204,7 @@ class Generator():
         nums.remove(student_matr)
 
         return random.sample(nums, num_friends)
-    
+
     def generateFriendgroups(self, number_students):
         # alternative: after students are generated, generate friend groups and add them individually to students list. To make sure
         # friend relationship is mutual. Have pre-generated dict (for every student give their friends)
@@ -224,13 +226,13 @@ class Generator():
                 friends[stu] = [i for i in group if i != stu]
 
         return friends
-    
+
     def generateProjectsRatings(self):
         return {
             project: self.randomStudentRankingProject(self.distribution[project])
             for project in self.projects
         }
-        
+
     def generateVetos(self):
         prohibited_students = []
         score = random.random()
@@ -242,7 +244,7 @@ class Generator():
                 math.ceil(math.log10(len(self.students))) + 1,
             )
         return prohibited_students
-    
+
     'worst case method: uniform skill requirements'
     def genererateUniformProgrammingRequirements(self, language):
         # every project requires expert skills in one programming language
@@ -254,7 +256,7 @@ class Generator():
             else:
                 requirements.update({l: random.randint(0, 3)})
         return requirements
-    
+
     'worst case method: uniform skill requirements'
     def generateUniformRequirementsProject(self, i):
         capacity, min_capacity = self.randomProjectCapacity()
@@ -278,7 +280,7 @@ class Generator():
                     break
         print(self.sumProjectsCapacity)
         return projects
-    
+
     'worst case method: uniform skill requirements'
     def generateUniformRequirementsInstance(self, number_projects, number_students):
         self.sumProjectsCapacity = 0
@@ -293,7 +295,7 @@ class Generator():
         self.instance = Instance(students=self.students, projects=self.projects)
 
         return self.instance
-    
+
     'worst case method: extreme ratings'
     def generateExtremeStudents(self, number_students):
         students = []
@@ -310,18 +312,18 @@ class Generator():
             )
             students.append(student)
         return students
-    
+
     'worst case method: extreme ratings 5'
     def studentExtremeProjectRatingFive(self):
         return 5
-    
+
     'worst case method: extreme ratings 5'
     def generateExtremeProjectsRatingsFive(self):
         return {
             project: self.studentExtremeProjectRatingFive()
             for project in self.projects
         }
-    
+
     'worst case method: extreme ratings 5'
     def generateExtremeInstanceFive(self, number_projects, number_students):
         self.sumProjectsCapacity = 0
@@ -336,18 +338,18 @@ class Generator():
         self.instance = Instance(students=self.students, projects=self.projects)
 
         return self.instance
-    
+
     'worst case method: extreme ratings 1'
     def studentExtremeProjectRatingOne(self):
         return 1
-    
+
     'worst case method: extreme ratings 1'
     def generateExtremeProjectsRatingsOne(self):
         return {
             project: self.studentExtremeProjectRatingOne()
             for project in self.projects
         }
-    
+
     'worst case method: extreme ratings 1'
     def generateExtremeInstanceOne(self, number_projects, number_students):
         self.sumProjectsCapacity = 0
@@ -362,7 +364,7 @@ class Generator():
         self.instance = Instance(students=self.students, projects=self.projects)
 
         return self.instance
-    
+
     'worst case method: extreme vetos'
     def generateExtremeVetos(self, project):
         # one project has a lot of vetos
@@ -374,7 +376,7 @@ class Generator():
                 int(len(self.students)/5),
             )
         return prohibited_students
-    
+
     'worst case method: extreme vetos'
     def generateExtremeVetoInstance(self, number_projects, number_students):
         self.sumProjectsCapacity = 0
@@ -389,30 +391,29 @@ class Generator():
         self.instance = Instance(students=self.students, projects=self.projects)
 
         return self.instance
-    
+
 g = Generator()
 # generate uniform skill requirements
 data1 = g.generateUniformRequirementsInstance(
         number_students=100, number_projects=1000
     ).model_dump_json(indent=2)
-with open(f"instances/data_worst_case_uniform_requirements.json", "w") as f:
+with open("instances/data_worst_case_uniform_requirements.json", "w") as f:
         f.write(data1)
 # generate extreme rating 5
 data2 = g.generateExtremeInstanceFive(
         number_students=100, number_projects=1000
     ).model_dump_json(indent=2)
-with open(f"instances/data_worst_case_extreme_rating_5.json", "w") as f:
+with open("instances/data_worst_case_extreme_rating_5.json", "w") as f:
         f.write(data2)
 # generate extreme rating 1
 data3 = g.generateExtremeInstanceOne(
         number_students=100, number_projects=1000
     ).model_dump_json(indent=2)
-with open(f"instances/data_worst_case_extreme_rating_1.json", "w") as f:
+with open("instances/data_worst_case_extreme_rating_1.json", "w") as f:
         f.write(data3)
 # generate extreme vetos
 data4 = g.generateExtremeVetoInstance(
         number_students=100, number_projects=1000
     ).model_dump_json(indent=2)
-with open(f"instances/data_worst_case_extreme_vetos.json", "w") as f:
+with open("instances/data_worst_case_extreme_vetos.json", "w") as f:
         f.write(data4)
-        

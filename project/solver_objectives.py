@@ -1,10 +1,9 @@
 from typing import List
 
 import gurobipy as gp
-from data_schema import Instance, Project, Solution, Student
-from gurobipy import GRB
+from data_schema import Project, Student
+from solver_vars import _ProgrammingVars, _StudentProjectVars
 
-from solver_vars import _StudentProjectVars,_EmptyProjectVars,_ProgrammingVars
 
 class _RatingObjective:
     """

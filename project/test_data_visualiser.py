@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 def readData(file_path):
     # reads in the data of the json file we are interested in
     with open(file_path) as file:
-        data = json.load(file)
-    return data
+        return json.load(file)
 
 
 def calculateAverages(data):
