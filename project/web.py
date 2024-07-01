@@ -50,12 +50,10 @@ def validate_inputs(first_name, last_name, matr_number):
     if not re.match(r"^\d{7}$", matr_number):
         st.error("Die Matrikelnummer muss genau 7 Ziffern enthalten.")
         return False
-    if not re.match(r"^\d{7}$", matr_number_first_friend) and matr_number_first_friend != '':
-        if not re.match(r"^\d{7}$", matr_number_first_friend):
+    if matr_number_first_friend != "" and not re.match(r"^\d{7}$", matr_number_first_friend):
             st.error("Die Matrikelnummer deines Freundes muss genau 7 Ziffern enthalten.")
             return False
-    if not re.match(r"^\d{7}$", matr_number_second_friend) and matr_number_second_friend != '':
-        if not re.match(r"^\d{7}$", matr_number_second_friend):
+    if matr_number_second_friend != "" and not re.match(r"^\d{7}$", matr_number_second_friend):
             st.error("Die Matrikelnummer deines Freundes muss genau 7 Ziffern enthalten.")
             return False
     if matr_number_first_friend == matr_number_second_friend:
@@ -103,7 +101,7 @@ with st.form("my_form"):
         options=["1", "2", "3", "4", "5"],
         horizontal=True,
     )
-    #st.form_submit_button("Absenden", on_click=show_confirmation_message)
+
     submitted = st.form_submit_button("Absenden")
     if submitted and validate_inputs(first_name, last_name, matr_number):
         st.write("Vorname:", first_name)
