@@ -5,6 +5,11 @@ from benchmarks import Benchmarks
 from verify import solve_sep_instance
 from yaml.loader import SafeLoader
 
+import asyncio        
+import time
+from functools import partial
+from datetime import datetime
+import concurrent.futures
 # streamlit login documentation: https://github.com/mkhorasani/Streamlit-Authenticator/tree/main?tab=readme-ov-file#authenticatelogin
 
 with open('./login.yaml') as file:
@@ -23,6 +28,10 @@ authenticator = stauth.Authenticate(
 
 name, authentication_status, username = authenticator.login()
 
+def fprints(timer):
+        return timer
+
+
 if authentication_status:
     authenticator.logout()
     st.write(f'Willkommen, {name}!')
@@ -32,7 +41,27 @@ if authentication_status:
 
     assign_project = st.button("Projektzuordnung berechnen", type="primary")
     if assign_project:
-        instance, solution = solve_sep_instance(filepath="./instances/data_s1000_g100.json")
+        
+        timer = st.empty()
+
+        start = time.time_ns()
+        end = time.time_ns()
+
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            future1 = executor.submit(solve_sep_instance, "./instances/data_s1000_g100.json")
+            future2 = executor.submit(fprints, round(end-start))
+
+            while concurrent.futures.as_completed(future2):
+                if future1.done():
+                     break
+                end = time.time_ns()
+                nano_secs = future2.result()
+
+                timer.metric("Elapsed time:", F"{round(nano_secs/1000000000, 3)}")
+                future2 = executor.submit(fprints, round(end-start))
+
+        instance, solution = future1.result()
+
         benchmark = Benchmarks(solution=solution, instance=instance)
         fig_rating = benchmark.log_rating_sums()
         st.pyplot(fig_rating)

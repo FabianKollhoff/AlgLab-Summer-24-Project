@@ -63,7 +63,7 @@ class Generator:
         return 5
 
     def randomProjectCapacity(self):
-        capacity = random.randint(5, 16)
+        capacity = random.randint(5, 13)
         self.sumProjectsCapacity += capacity
         min_capacity = random.randint(5, capacity)
         return (capacity, min_capacity)
@@ -92,10 +92,10 @@ class Generator:
         projects = {i: self.generateProject(i) for i in range(number_projects)}
         while self.sumProjectsCapacity < number_students:
             for project in projects:
-                randomAdative = random.randint(1, 6)
+                randomAdative = random.randint(0,7)
                 self.sumProjectsCapacity += randomAdative
                 projects[project].capacity += randomAdative
-                if self.sumProjectsCapacity > number_students:
+                if self.sumProjectsCapacity >= number_students:
                     break
         print(self.sumProjectsCapacity)
         return projects
@@ -210,11 +210,11 @@ class Generator:
         # ensure that probabilities add up to 1
         model.Add(p1 + p2 + p3 + p4 + p5 == 100)
         # ensure that probabilities are not to small
-        model.Add(p1 >= 0)
-        model.Add(p2 >= 0)
-        model.Add(p3 >= 5)
-        model.Add(p4 >= 5)
-        model.Add(p5 >= 80)
+        model.Add(p1 >= 10)
+        model.Add(p2 >= 10)
+        model.Add(p3 >= 10)
+        model.Add(p4 >= 10)
+        model.Add(p5 >= 10)
         # minimize distance between sum of weighted probabilities and average_rating
         difference = model.NewIntVar(-10000, 10000, "difference")
         abs_difference = model.NewIntVar(0, 10000, "abs_difference")
