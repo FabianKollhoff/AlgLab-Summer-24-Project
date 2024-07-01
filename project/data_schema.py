@@ -6,8 +6,8 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 class Student(BaseModel):
     last_name: str = Field(
         description="The last name of the student",
-        pattern=r"^[a-zA-Z]{2,}(?: [a-zA-Z]+)?$",
-    )  # might need to allow special characters such as hyphens
+        pattern=r"^[\p{L}]{2,}(?: [\p{L}]+)?$",
+    )
     first_name: str = Field(pattern=r"^[A-Z][a-zA-Z]{1,}$")
     matr_number: int = Field(ge=0, le=9999999)
     projects_ratings: Dict[int, int]

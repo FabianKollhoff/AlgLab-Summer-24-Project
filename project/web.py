@@ -1,4 +1,5 @@
 import streamlit as st
+import re
 from data_schema import Student
 from streamlit.components.v1 import html
 
@@ -41,6 +42,15 @@ def show_confirmation_message():
     html(js)
     create_student()
 
+def validate_inputs(first_name, last_name, matr_number):
+    if not first_name or not last_name or not matr_number:
+        st.error("Vorname, Nachname und Matrikelnummer sind Pflichtfelder.")
+        return False
+    if not re.match(r"^\d{7}$", matr_number):
+        st.error("Die Matrikelnummer muss genau 7 Ziffern enthalten.")
+        return False
+    return True
+
 
 st.write(
     """
@@ -81,4 +91,13 @@ with st.form("my_form"):
         options=["1", "2", "3", "4", "5"],
         horizontal=True,
     )
-    st.form_submit_button("Absenden", on_click=show_confirmation_message)
+    #st.form_submit_button("Absenden", on_click=show_confirmation_message)
+    submitted = st.form_submit_button("Absenden")
+    if submitted:
+        if validate_inputs(first_name, last_name, matr_number):
+            st.write("Vorname:", first_name)
+            st.write("Nachname:", last_name)
+            st.write("Matrikelnummer:", matr_number)
+            st.write("Studiengang:", programme)
+            st.write("Projektinteressen:", projects_ratings)
+            show_confirmation_message()
