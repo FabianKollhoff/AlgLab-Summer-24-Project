@@ -39,12 +39,9 @@ class Benchmarks(BaseModel):
 
         x = np.array(ratings)
         y = np.array(list(rating_sums.values()))
-        barplot = plt.bar(x, y)
-        plt.bar_label(barplot, labels=y, label_type="edge")
-        plt.title("Occurence of rating in solution")
-        plt.show()
+
         # get current figure
-        return plt.gcf()
+        return x,y
 
     def log_avg_rating(self):
         # log the average rating of students in the solution
@@ -75,10 +72,8 @@ class Benchmarks(BaseModel):
         projs = list(self.solution.projects)
         x = np.array(projs)
         y = np.array(ratings)
-        plt.bar(x, y)
-        plt.title("Average rating of students in project")
-        plt.show()
-        return plt.gcf()
+        return x,y
+
 
     def log_median_group_size(self):
         # log the median group size
@@ -104,10 +99,8 @@ class Benchmarks(BaseModel):
         projs = list(self.solution.projects)
         x = np.array(projs)
         y = np.array(utils)
-        plt.bar(x, y)
-        plt.title("Utilization of project capacities")
-        plt.show()
-        return plt.gcf()
+        return x,y
+
 
     def log_avg_util(self):
         # compute average utilazation of project capacities
@@ -140,9 +133,10 @@ class Benchmarks(BaseModel):
         nx.draw_networkx(
             graph, pos=layout, edge_color=colors, node_size=15, with_labels=False
         )
-        plt.title(f"Friend graph. G:{num_greens} R:{num_reds}")
-        plt.show()
-        return plt.gcf()
+        fig, ax = plt.subplots()
+        ax.title(f"Friend graph. G:{num_greens} R:{num_reds}")
+        ax.show()
+        return ax.gcf()
 
     def log_programming_requirements(self):
         # in solution: For each project log for each programming language % of how students that meet requirement

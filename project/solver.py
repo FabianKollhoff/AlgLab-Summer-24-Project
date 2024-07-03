@@ -21,6 +21,8 @@ class SepSolver:
         self.projects = list(instance.projects.values())
         self.students_min_rating = self.students_with_minimum_positive_ratings()
 
+        self.current_objective = 0
+
         self._model = gp.Model()
 
         self._studentProjectVars = _StudentProjectVars(
@@ -126,4 +128,44 @@ class SepSolver:
         if self._model.status == GRB.OPTIMAL:
             self.current_best_solution = self.get_current_solution()
 
+        return self.current_best_solution
+
+    def solve_next_objective(self) -> Solution:
+        if self.current_objective == 0:
+            self._model.setObjective(
+                self._ratingObjective.get(),
+                gp.GRB.MAXIMIZE
+            )
+
+            self._model.optimize()
+            if self._model.status == GRB.OPTIMAL:
+                self._model.addConstr(
+                    self._ratingObjective.get()
+                    >= self._model.getObjective().getValue() * 1
+                )
+
+            if self._model.status == GRB.OPTIMAL:
+                self.current_best_solution = self.get_current_solution()
+        elif self.current_objective == 1:
+            self._model.setObjective(
+                self._programmingObjective.get(),
+                gp.GRB.MAXIMIZE,
+            )
+
+            self._model.optimize()
+            if self._model.status == GRB.OPTIMAL:
+                self._model.addConstr(
+                    self._programmingObjective.get()
+                    >= self._model.getObjective().getValue() * 0.99
+                )
+        elif self.current_objective == 2:
+            self._model.setObjective(
+                self._friendsObjective.get(),
+                gp.GRB.MAXIMIZE,
+            )
+
+            self._model.optimize()
+            if self._model.status == GRB.OPTIMAL:
+                self.current_best_solution = self.get_current_solution()
+        self.current_objective += 1
         return self.current_best_solution

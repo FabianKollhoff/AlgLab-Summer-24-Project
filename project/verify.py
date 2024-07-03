@@ -50,6 +50,56 @@ def solve_sep_instance(filepath: str):
 
     return instance, solution
 
+def genererate_solver(filepath: str):
+    with open(filepath) as f:
+        instance: Instance = Instance.model_validate_json(f.read())
+
+    solver = SepSolver(instance)
+
+    return solver, instance
+
+def solve_next_objective(solver: SepSolver, instance: Instance):
+    solution = solver.solve_next_objective()
+
+    CHECK(solution is not None, "The returned solution must not be 'None'!")
+
+    # check every project has a mimium and maximum number of participants or is empty
+    for project in solution.projects:
+        CHECK(
+            len(solution.projects[project]) <= instance.projects[project].capacity,
+            f"Too many students in project: {project}!",
+        )
+        CHECK(
+            len(solution.projects[project]) == 0
+            or len(solution.projects[project])
+            >= instance.projects[project].min_capacity,
+            f"Project {project} has {len(solution.projects[project])} students with less then the minimum required of {instance.projects[project].min_capacity}!",
+        )
+        # check if solution complies with project vetos
+        for student_solution in solution.projects[project]:
+            CHECK(
+                student_solution not in instance.projects[project].veto,
+                f"The returned solution contains a prohibited student {student_solution.matr_number} in project {project}!",
+            )
+
+    # check if every student is contained in exactly one project
+    for student_instance in instance.students:
+        count_student_in_solution = 0
+        for project in solution.projects:
+            for student_solution in solution.projects[project]:
+                if student_instance.matr_number == student_solution.matr_number:
+                    count_student_in_solution += 1
+        CHECK(
+            count_student_in_solution == 1,
+            f"The returned solution contains a student {student_instance} {count_student_in_solution} times!",
+        )
+
+    data = solution.model_dump_json(indent=2)
+    with open(f"solution/solution_of_{len(instance.projects)}_{len(instance.students)}.json", "w") as f:
+        f.write(data)
+
+    return solution
+
 
 
 

@@ -2,14 +2,15 @@ import streamlit as st
 import streamlit_authenticator as stauth
 import yaml
 from benchmarks import Benchmarks
-from verify import solve_sep_instance
+import verify
 from yaml.loader import SafeLoader
 
-import asyncio        
 import time
-from functools import partial
 from datetime import datetime
-import concurrent.futures
+from multiprocessing import Process, Value, Array
+from data_schema import Instance, Solution
+import pandas as pd
+import numpy as np
 # streamlit login documentation: https://github.com/mkhorasani/Streamlit-Authenticator/tree/main?tab=readme-ov-file#authenticatelogin
 
 with open('./login.yaml') as file:
@@ -28,8 +29,16 @@ authenticator = stauth.Authenticate(
 
 name, authentication_status, username = authenticator.login()
 
-def fprints(timer):
-        return timer
+def solve_instance(num):
+    solver, instance = verify.genererate_solver("./instances/data_s1000_g100.json")
+    solution = verify.solve_next_objective(solver=solver,instance=instance)
+    num.value = 0.6
+    solution = verify.solve_next_objective(solver=solver,instance=instance)
+    num.value = 0.9
+    solution = verify.solve_next_objective(solver=solver,instance=instance)
+    num.value = 1
+
+    return solution, instance
 
 
 if authentication_status:
@@ -41,35 +50,48 @@ if authentication_status:
 
     assign_project = st.button("Projektzuordnung berechnen", type="primary")
     if assign_project:
-        
+        num = Value('d', 0)
+        test_data = st.empty()
         timer = st.empty()
 
         start = time.time_ns()
         end = time.time_ns()
+        my_bar = st.progress(0, text="Progress")
 
-        with concurrent.futures.ProcessPoolExecutor() as executor:
-            future1 = executor.submit(solve_sep_instance, "./instances/data_s1000_g100.json")
-            future2 = executor.submit(fprints, round(end-start))
+        p = Process(target=solve_instance, args=(num,))
+        p.start()
+        while p.is_alive():
+            time.sleep(0.1)
+            end = time.time_ns()
+            progress_text = ""
+            if num.value == 0:
+                progress_text = "project rating objective"
+            elif num.value == 0.6:
+                progress_text = "programming rating objective"
+            elif num.value == 0.9:
+                progress_text = "friends rating objective"
+            else:
+                progress_text = "finished"
+            timer.metric("Elapsed time:", F"{round((end-start)/1000000000, 3)}")
+            my_bar.progress(num.value, text=progress_text)
 
-            while concurrent.futures.as_completed(future2):
-                if future1.done():
-                     break
-                end = time.time_ns()
-                nano_secs = future2.result()
-
-                timer.metric("Elapsed time:", F"{round(nano_secs/1000000000, 3)}")
-                future2 = executor.submit(fprints, round(end-start))
-
-        instance, solution = future1.result()
-
+        with open("solution/solution_of_100_1000.json") as f:
+            solution: Solution = Solution.model_validate_json(f.read())
+        
+        with open("./instances/data_s1000_g100.json") as f:
+            instance: Instance = Instance.model_validate_json(f.read())
         benchmark = Benchmarks(solution=solution, instance=instance)
-        fig_rating = benchmark.log_rating_sums()
-        st.pyplot(fig_rating)
-        #fig_programming = benchmark.log_programming_requirements()
-        #st.pyplot(fig_programming)
-        #fig_friend = benchmark.log_friend_graph()
-        #st.pyplot(fig_friend)
-        #fig_proj_util = benchmark.log_proj_util()
+        y_rating, x_rating = benchmark.log_rating_sums()
+        #read instance and solution from
+        chart_data = pd.DataFrame(x_rating, y_rating)
+        st.bar_chart(chart_data)
+        
+        fig_programming = benchmark.log_programming_requirements()
+        st.pyplot(fig_programming)
+
+        x,y = benchmark.log_proj_util()
+        chart_data = pd.DataFrame(y, x)
+        st.bar_chart(chart_data)
         #st.pyplot(fig_proj_util)
         #fig_avg_rating = benchmark.log_avg_proj_rating()
         #st.pyplot(fig_avg_rating)
