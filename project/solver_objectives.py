@@ -89,3 +89,45 @@ class _FriendsObjective:
         return sum(
             relation for relation in self.relations
         )
+
+class _OptSizeOjective:
+    """
+    A helper class to calculate the objective concerning the optimal size of the projects.
+    """
+
+    def __init__(
+        self,
+        model,
+        students: List[Student],
+        projects: List[Project],
+        studentProjectVars: _StudentProjectVars,
+    ):
+        self._students = students
+        self._projects = projects
+        self._studentProjectVars = studentProjectVars
+        self._model = model
+
+        self.deviations = []
+        for proj in self._projects:
+            deviation = model.addVar(
+                            vtype=gp.GRB.INTEGER, name="deviation_of_"
+                        )
+            abs_dev = model.addVar(vtype=gp.GRB.INTEGER, name="abs_dev_of_")
+            model.addConstr(
+                deviation == sum(self._studentProjectVars.all_students_with_project(project=proj)) - proj.opt_size
+                )
+            model.addConstr(abs_dev == gp.abs_(deviation))
+            self.deviations.append(abs_dev)
+
+    # try to minimize the sum(deviation of every project from its optimal size)
+    # TODO: make it not quadratic ???
+
+    def get(self):
+        return sum(el * el for el in self.deviations)
+    
+    def _enforce_every_project_minimize_deviation(self, limit):
+        """
+        
+        """
+        for dev in self.deviations:
+            self._model.addConstr(dev <= limit)

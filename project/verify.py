@@ -48,6 +48,8 @@ def solve_sep_instance(filepath: str):
     with open(f"solution/solution_of_{len(instance.projects)}_{len(instance.students)}.json", "w") as f:
         f.write(data)
 
+    benchmark = Benchmarks(instance=instance, solution=solution)
+    benchmark.log()
     return instance, solution
 
 def genererate_solver(filepath: str):

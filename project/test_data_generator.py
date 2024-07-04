@@ -66,7 +66,8 @@ class Generator:
         capacity = random.randint(5, 13)
         self.sumProjectsCapacity += capacity
         min_capacity = random.randint(5, capacity)
-        return (capacity, min_capacity)
+        opt_size = int((capacity + min_capacity) / 2)
+        return (capacity, min_capacity, opt_size)
 
     def genererateProgrammingRequirements(self):
         return {
@@ -78,11 +79,12 @@ class Generator:
         }
 
     def generateProject(self, i):
-        capacity, min_capacity = self.randomProjectCapacity()
+        capacity, min_capacity, opt_size = self.randomProjectCapacity()
         return Project(
             id=i,
             name=str(i),
             capacity=capacity,
+            opt_size=opt_size,
             min_capacity=min_capacity,
             veto=[],
             programming_requirements=self.genererateProgrammingRequirements(),
@@ -92,9 +94,10 @@ class Generator:
         projects = {i: self.generateProject(i) for i in range(number_projects)}
         while self.sumProjectsCapacity < number_students:
             for project in projects:
-                randomAdative = random.randint(0,7)
+                randomAdative = random.randint(0,4)
                 self.sumProjectsCapacity += randomAdative
                 projects[project].capacity += randomAdative
+                projects[project].opt_size = int((projects[project].capacity + projects[project].min_capacity) / 2)
                 if self.sumProjectsCapacity >= number_students:
                     break
         print(self.sumProjectsCapacity)
