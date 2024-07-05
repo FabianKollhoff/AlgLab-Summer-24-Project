@@ -112,12 +112,12 @@ class _OptSizeOjective:
             deviation = model.addVar(
                             vtype=gp.GRB.INTEGER, name="deviation_of_"
                         )
-            abs_dev = model.addVar(vtype=gp.GRB.INTEGER, name="abs_dev_of_")
+            #abs_dev = model.addVar(vtype=gp.GRB.INTEGER, name="abs_dev_of_")
             model.addConstr(
                 deviation == sum(self._studentProjectVars.all_students_with_project(project=proj)) - proj.opt_size
                 )
-            model.addConstr(abs_dev == gp.abs_(deviation))
-            self.deviations.append(abs_dev)
+            #model.addConstr(abs_dev == gp.abs_(deviation))
+            self.deviations.append(deviation)
 
     # try to minimize the sum(deviation of every project from its optimal size)
     # TODO: make it not quadratic ???
