@@ -104,6 +104,8 @@ def solve_next_objective(solver: SepSolver, instance: Instance):
 
 
 @mandatory_testcase(max_runtime_s=30)
+def SEPdata():
+    solve_sep_instance(filepath="./instances/SEP_data.json")
 def s100_g10():
     solve_sep_instance(filepath="./instances/data_s100_g10.json")
 
