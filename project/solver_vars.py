@@ -167,7 +167,7 @@ class _ProgrammingVars:
         Return all languages of the given students and projects.
         """
         for programming_language in project.programming_requirements:
-            if self.x(programming_language, student, programming_language) is not None:
+            if self.x(programming_language, student, project) is not None:
                 yield self.x(programming_language, student, project)
 
     def all_students(self, programming_language: str, project: Project):
@@ -175,7 +175,7 @@ class _ProgrammingVars:
         Return all students of the given languages and projects.
         """
         for student in self._students:
-            if self.x(programming_language, student, programming_language) is not None:
+            if self.x(programming_language, student, project) is not None:
                 yield self.x(programming_language, student, project)
 
     def for_each(self, func):

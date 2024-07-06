@@ -115,7 +115,7 @@ class _StudentProgrammingConstraint:
         for student in self._students:
             for project in self._projects:
                 self._model.addConstr(
-                sum([self._programmingVars.x(programming_language=programming_language, student=student, project=project) for programming_language in project.programming_requirements])
+                sum(self._programmingVars.all_languages(student, project))
                 <= self._studentProjectVars.x(student, project)
             )
 
