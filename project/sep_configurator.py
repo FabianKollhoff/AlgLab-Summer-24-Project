@@ -66,9 +66,9 @@ if authentication_status:
             progress_text = ""
             if num.value == 0:
                 progress_text = "project rating objective"
-            elif num.value == 0.6:
+            elif num.value == 0.33:
                 progress_text = "programming rating objective"
-            elif num.value == 0.9:
+            elif num.value == 0.66:
                 progress_text = "friends rating objective"
             else:
                 progress_text = "finished"
