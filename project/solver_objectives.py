@@ -50,7 +50,7 @@ class _ProgrammingObjective:
                 lambda programming_language, student, project: self._programmingVars.x(
                     programming_language, student, project
                 )
-                * student.programming_language_ratings[programming_language]
+                * (student.programming_language_ratings[programming_language] - 1)
             )
         )
 

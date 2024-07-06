@@ -88,13 +88,20 @@ class SepSolver:
 
     def get_current_solution(self):
         projects = {project.id: [] for project in self.projects}
+        roles = {student.matr_number: 0 for student in self.students}
         for project in self.projects:
             for student in self.students:
                 if self._studentProjectVars.x(student, project).X > 0.5:
+                    print(student.matr_number)
+                    print(" ")
+                    for programming_language in project.programming_requirements:
+                        print(programming_language)
+                        print(self._programmingVars.x(programming_language=programming_language, student=student, project=project).X)
+                        if self._programmingVars.x(programming_language=programming_language, student=student, project=project).X > 0.5:
+                            roles[student.matr_number] = student.programming_language_ratings[programming_language]
                     projects[project.id].append(student)
-                    print(f"{project.id}", student.matr_number)
-
-        return Solution(projects=projects)
+                    print("\n")
+        return Solution(projects=projects, roles=roles)
 
     def solve(self) -> Solution:
         self._model.setObjective(
