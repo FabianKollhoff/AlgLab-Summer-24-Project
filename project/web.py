@@ -27,7 +27,7 @@ def create_student():
             },
             friends=friends,
         ).model_dump_json(indent=2)
-        with open(f"instances/data_{matr_number}.json", "w") as f:
+        with open(f"instances/students/data_{matr_number}.json", "w") as f:
             f.write(data)
     except:
         message = """alert("Bitte überprüfe deine Eingaben und korrigiere sie.");"""
@@ -56,7 +56,7 @@ def validate_inputs(first_name, last_name, matr_number):
     if matr_number_second_friend != "" and not re.match(r"^\d{7}$", matr_number_second_friend):
             st.error("Die Matrikelnummer deines Freundes muss genau 7 Ziffern enthalten.")
             return False
-    if matr_number_first_friend == matr_number_second_friend:
+    if matr_number_first_friend == matr_number_second_friend and matr_number_first_friend != "" and matr_number_second_friend != "":
         st.error("Du musst zwei unterschiedliche Freunde angeben.")
         return False
     return True
