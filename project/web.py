@@ -1,5 +1,8 @@
-import re
 import json
+import os
+import re
+from pathlib import Path
+
 import streamlit as st
 from data_schema import Student
 from streamlit.components.v1 import html
@@ -17,7 +20,7 @@ def create_student():
             last_name=last_name,
             first_name=first_name,
             matr_number=int(matr_number),
-            projects_ratings={id: int(rating) for id,rating in projects_ratings.items()},
+            projects_ratings=projects_ratings,
             programming_language_ratings={
                 "Python": int(python),
                 "Java": int(java),
@@ -27,43 +30,24 @@ def create_student():
             },
             friends=friends,
         ).model_dump_json(indent=2)
+
+        path = Path("instances/students")
+        path.mkdir(parents=True, exist_ok=True)
         with open(f"instances/students/data_{matr_number}.json", "w") as f:
             f.write(data)
+
+        # comment this section if you do not want to refresh your page to input new values
         message = """
         alert("Vielen Dank, die Daten wurden abgesendet.");
         """
         js = f"<script>{message}</script>"
         html(js)
+
     except:
         message = """alert("Bitte überprüfe deine Eingaben und korrigiere sie.");"""
         js = f"<script>{message}</script>"
         html(js)
-        
-def create_student_test():
-        friends = []
-        if matr_number_first_friend != "":
-            friends.append(int(matr_number_first_friend))
-        if matr_number_second_friend != "":
-            friends.append(int(matr_number_second_friend))
 
-        data = Student(
-            last_name=last_name,
-            first_name=first_name,
-            matr_number=int(matr_number),
-            projects_ratings={id: int(rating) for id,rating in projects_ratings.items()},
-            programming_language_ratings={
-                "Python": int(python),
-                "Java": int(java),
-                "C/C++": int(c_cpp),
-                "SQL": int(sql),
-                "PHP": int(php),
-            },
-            friends=friends,
-        ).model_dump_json(indent=2)
-        with open(f"instances/students/data_{matr_number}.json", "w") as f:
-            f.write(data)
-    
-    
 
 def validate_inputs(first_name, last_name, matr_number):
     if not first_name or not last_name or not matr_number:
@@ -83,11 +67,6 @@ def validate_inputs(first_name, last_name, matr_number):
         return False
     return True
 
-# load projects for student to rate
-projects = {}
-with open("instances/SEP_data.json", "r") as file:
-    project_data = json.load(file)
-    projects = project_data["projects"]
 st.write(
     """
 # SEP - Anmeldung
@@ -122,19 +101,28 @@ with st.form("my_form"):
     st.link_button(
         "Projektseite", "https://www.ibr.cs.tu-bs.de/courses/ss24/sep-alg-tg/"
     )
+
+    # list all available projects
     projects_ratings = {}
-    for prooject_id, project in projects.items():
-        print(prooject_id)
-        id = project["id"]
-        name = project["name"]
-        max_capacity = project["capacity"]
-        min_capacity = project["min_capacity"]
-        projects_ratings[id] = st.radio(
-            f"{name} ({min_capacity}-{max_capacity} Studierende)",
+    directory = 'instances/projects'
+    file_names = os.listdir(directory)
+    file_names.sort()
+    for filename in file_names:
+        print(filename)
+        if filename.endswith('.json'):
+            filepath = os.path.join(directory, filename)
+            with open(filepath) as file:
+                project_data = json.load(file)
+                project_name = project_data["name"]
+                project_capacity = project_data["capacity"]
+                project_min_capacity = project_data["min_capacity"]
+                project_id = project_data["id"]
+        projects_rating = st.radio(
+            f"Projekt {project_name} ({project_min_capacity} bis {project_capacity} Studierende)",
             options=["1", "2", "3", "4", "5"],
             horizontal=True,
         )
-    print(projects_ratings)
+        projects_ratings[project_id] = int(projects_rating)
 
     submitted = st.form_submit_button("Absenden")
     if submitted and validate_inputs(first_name, last_name, matr_number):
