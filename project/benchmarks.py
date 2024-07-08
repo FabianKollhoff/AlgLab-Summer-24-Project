@@ -10,22 +10,20 @@ class Benchmarks(BaseModel):
     solution: Solution
 
     def log(self):
-        # logger = logging.getLogger('logger')
+        #logger = logging.getLogger('logger')
 
-        # self.log_avg_util()
+        #self.log_avg_util()
 
-        # self.log_proj_util()
+        #self.log_proj_util()
 
-        # self.log_median_group_size()
+        #self.log_median_group_size()
 
         #self.log_avg_proj_rating()
 
-        # self.log_avg_rating()
+        #self.log_avg_rating()
 
-        # self.log_rating_sums()
-        # TODO: log the number of partner requests that were fulfilled
+        #self.log_rating_sums()
 
-        # TODO: log graph of friend relations that were (not) fulfilled
         #self.log_friend_graph()
         self.log_programming_requirements()
 
@@ -136,10 +134,9 @@ class Benchmarks(BaseModel):
         nx.draw_networkx(
             graph, pos=layout, edge_color=colors, node_size=15, with_labels=False
         )
-        fig, ax = plt.subplots()
-        ax.title(f"Friend graph. G:{num_greens} R:{num_reds}")
-        ax.show()
-        return ax.gcf()
+        plt.title(f"Friend graph. G:{num_greens} R:{num_reds}")
+        plt.show()
+        return plt.gcf()
 
     def log_programming_requirements(self):
         # in solution: For each project log for each programming language % of how students that meet requirement
@@ -161,7 +158,7 @@ class Benchmarks(BaseModel):
 
             project_requirements_fullfilled_precentage.append(fullfilled_programming_requirements/project_requirements_count)
             project_names.append(project.name)
-            
+
             # create plot
         x = np.array(project_names)
         y = np.array(project_requirements_fullfilled_precentage)

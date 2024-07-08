@@ -110,10 +110,8 @@ if authentication_status:
         chart_data = pd.DataFrame(y, x)
         st.bar_chart(chart_data)
 
-        #fig_avg_rating = benchmark.log_avg_proj_rating()
-        #st.pyplot(fig_avg_rating)
-        #fig_friend = benchmark.log_friend_graph()
-        #st.pyplot(fig_friend)
+        fig_friend = benchmark.log_friend_graph()
+        st.pyplot(fig_friend)
 
 
 elif authentication_status is False:

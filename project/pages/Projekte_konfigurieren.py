@@ -14,9 +14,11 @@ def create_project():
     if veto != "":
         pass
 
-    # determine project id
+    # determine project id (only works if no projects are deleted)
     file_paths = []
-    directory = 'instances/projects'
+    directory = "instances/projects"
+    path = Path(directory)
+    path.mkdir(parents=True, exist_ok=True)
     for filename in os.listdir(directory):
         if filename.endswith('.json'):
             file_paths.append(f"{directory}/{filename}")
@@ -38,8 +40,6 @@ def create_project():
         veto=vetos
     ).model_dump_json(indent=2)
 
-    path = Path("instances/projects")
-    path.mkdir(parents=True, exist_ok=True)
     with open(f"instances/projects/data_{id}.json", "w") as f:
         f.write(data)
     st.success(f"Das Projekt {name} wurde angelegt.", icon="✅")

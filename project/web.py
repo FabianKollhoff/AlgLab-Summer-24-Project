@@ -49,7 +49,7 @@ def create_student():
         html(js)
 
 
-def validate_inputs(first_name, last_name, matr_number):
+def validate_inputs(first_name, last_name, matr_number, matr_number_first_friend, matr_number_second_friend):
     if not first_name or not last_name or not matr_number:
         st.error("Vorname, Nachname und Matrikelnummer sind Pflichtfelder.")
         return False
@@ -64,6 +64,9 @@ def validate_inputs(first_name, last_name, matr_number):
             return False
     if matr_number_first_friend == matr_number_second_friend and matr_number_first_friend != "" and matr_number_second_friend != "":
         st.error("Du musst zwei unterschiedliche Freunde angeben.")
+        return False
+    if matr_number_first_friend == matr_number or matr_number_second_friend == matr_number:
+        st.error("Du darfst nicht deine eigene Matrikelnummern bei deinen Wunschgruppenpartnern angeben.")
         return False
     return True
 
@@ -125,5 +128,5 @@ with st.form("my_form"):
         projects_ratings[project_id] = int(projects_rating)
 
     submitted = st.form_submit_button("Absenden")
-    if submitted and validate_inputs(first_name, last_name, matr_number):
+    if submitted and validate_inputs(first_name, last_name, matr_number, matr_number_first_friend, matr_number_second_friend):
         create_student()
