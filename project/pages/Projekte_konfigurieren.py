@@ -1,3 +1,4 @@
+import json
 import os
 import re
 from pathlib import Path
@@ -10,10 +11,6 @@ from yaml.loader import SafeLoader
 
 
 def create_project():
-    vetos = []
-    if veto != "":
-        pass
-
     # determine project id (only works if no projects are deleted)
     file_paths = []
     directory = "instances/projects"
@@ -24,6 +21,27 @@ def create_project():
             file_paths.append(f"{directory}/{filename}")
     ids = [int(re.search(r'\d+', path).group()) for path in file_paths]
     id = max(ids) + 1 if len(ids) > 0 else 0
+
+    vetos = []
+    if veto != "":
+        data = {
+            id: veto
+        }
+        veto_file = "instances/veto.json"
+        if os.path.exists(veto_file):
+            with open(veto_file, 'r') as file:
+                    existing_data = json.load(file)
+        else:
+            existing_data = {}
+
+        new_veto = {
+            id: int(veto)
+        }
+        existing_data.update(new_veto)
+
+        with open(veto_file, 'w') as file:
+            json.dump(existing_data, file, indent=2)
+
 
     data = Project(
         id=id,

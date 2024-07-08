@@ -28,7 +28,20 @@ def combine_data():
                 project_id = project_data["id"]
                 projects[project_id] = project_data
 
+    veto_file = "instances/veto.json"
+    if os.path.exists(veto_file):
+            with open(veto_file, 'r') as file:
+                veto_data = json.load(file)
+                for project in veto_data:
+                    matr_number = veto_data[project]
+                    student_list = []
+                    for student in combined_data["students"]:
+                        if int(matr_number) == student["matr_number"]:
+                            student_list.append(student)
+                            projects[int(project)]["veto"] = student_list
+
     combined_data.update({"projects": projects})
+
 
     with open('instances/SEP_data.json', 'w') as outfile:
         json.dump(combined_data, outfile, indent=4)
