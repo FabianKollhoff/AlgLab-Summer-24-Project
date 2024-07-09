@@ -23,7 +23,7 @@ class _RatingObjective:
     def get(self):
 
         return sum(
-        [self._studentProjectVars.x(student, project) * self._studentProjectVars.rating(student=student, project=project)
+        [self._studentProjectVars.x(student, project) * self._studentProjectVars.rating(student=student, project_id=project)
             for student in self._students
              for project in self._projects
         ]
