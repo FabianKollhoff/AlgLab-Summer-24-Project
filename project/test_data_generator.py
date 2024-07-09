@@ -63,7 +63,7 @@ class Generator:
         return 5
 
     def randomProjectCapacity(self):
-        capacity = random.randint(5, 13)
+        capacity = random.randint(5, 17)
         self.sumProjectsCapacity += capacity
         min_capacity = random.randint(5, capacity)
         return (capacity, min_capacity)
@@ -92,7 +92,7 @@ class Generator:
         projects = {i: self.generateProject(i) for i in range(number_projects)}
         while self.sumProjectsCapacity < number_students:
             for project in projects:
-                randomAdative = random.randint(0,7)
+                randomAdative = random.randint(2,7)
                 self.sumProjectsCapacity += randomAdative
                 projects[project].capacity += randomAdative
                 if self.sumProjectsCapacity >= number_students:
