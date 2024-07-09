@@ -24,7 +24,7 @@ class Student(BaseModel):
             if rating < 1 or rating > 5:
                 raise ValueError("Project ratings must be between 1 and 5.")
         return v
-    
+
     @field_validator("programming_language_ratings")
     @classmethod
     def check_programming_language_ratings(cls, v) -> Dict[int, int]:

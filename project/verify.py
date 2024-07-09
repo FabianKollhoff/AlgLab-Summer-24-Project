@@ -1,5 +1,4 @@
 from _alglab_utils import CHECK, main, mandatory_testcase
-from benchmarks import Benchmarks
 from data_schema import Instance
 from solver import SepSolver
 
@@ -48,8 +47,6 @@ def solve_sep_instance(filepath: str):
     with open(f"solution/solution_of_{len(instance.projects)}_{len(instance.students)}.json", "w") as f:
         f.write(data)
 
-    benchmark = Benchmarks(instance=instance, solution=solution)
-    #benchmark.log()
     return instance, solution
 
 def genererate_solver(filepath: str):
@@ -108,6 +105,9 @@ def solve_next_objective(solver: SepSolver, instance: Instance):
 @mandatory_testcase(max_runtime_s=30)
 def SEPdata():
     solve_sep_instance(filepath="./instances/SEP_data.json")
+
+
+@mandatory_testcase(max_runtime_s=30)
 def s100_g10():
     solve_sep_instance(filepath="./instances/data_s100_g10.json")
 
