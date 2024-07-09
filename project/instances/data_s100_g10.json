@@ -2585,8 +2585,8 @@
     "0": {
       "id": 0,
       "name": "0",
-      "capacity": 6,
-      "min_capacity": 6,
+      "capacity": 20,
+      "min_capacity": 20,
       "veto": [
         {
           "last_name": "Doe",
@@ -2678,8 +2678,8 @@
     "1": {
       "id": 1,
       "name": "1",
-      "capacity": 10,
-      "min_capacity": 6,
+      "capacity": 20,
+      "min_capacity": 20,
       "veto": [],
       "programming_requirements": {
         "Python": 2,
@@ -2693,7 +2693,7 @@
       "id": 2,
       "name": "2",
       "capacity": 13,
-      "min_capacity": 8,
+      "min_capacity": 13,
       "veto": [
         {
           "last_name": "Doe",
@@ -2789,7 +2789,7 @@
       "id": 3,
       "name": "3",
       "capacity": 7,
-      "min_capacity": 5,
+      "min_capacity": 7,
       "veto": [],
       "programming_requirements": {
         "Python": 3,
@@ -2803,7 +2803,7 @@
       "id": 4,
       "name": "4",
       "capacity": 17,
-      "min_capacity": 8,
+      "min_capacity": 17,
       "veto": [
         {
           "last_name": "Doe",
@@ -2924,7 +2924,7 @@
       "id": 7,
       "name": "7",
       "capacity": 9,
-      "min_capacity": 5,
+      "min_capacity": 9,
       "veto": [],
       "programming_requirements": {
         "Python": 3,
@@ -2952,7 +2952,7 @@
       "id": 9,
       "name": "9",
       "capacity": 13,
-      "min_capacity": 12,
+      "min_capacity": 13,
       "veto": [],
       "programming_requirements": {
         "Python": 1,

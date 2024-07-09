@@ -96,7 +96,10 @@ if authentication_status:
             else:
                 progress_text = "finished"
             timer.metric("Elapsed time:", F"{round((end-start)/1000000000, 3)}")
-            my_bar.progress(num.value, text=progress_text)
+            if num.value != -1:
+                my_bar.progress(num.value, text=progress_text)
+            else:
+                my_bar.progress(1, text=progress_text)
 
         if num.value == -1:
             st.write("!!! INFEASABLE SOLUTION !!!")

@@ -7076,7 +7076,7 @@
       "id": 0,
       "name": "0",
       "capacity": 9,
-      "min_capacity": 6,
+      "min_capacity": 9,
       "veto": [],
       "programming_requirements": {
         "Python": 0,
@@ -7104,7 +7104,7 @@
       "id": 2,
       "name": "2",
       "capacity": 16,
-      "min_capacity": 5,
+      "min_capacity": 16,
       "veto": [],
       "programming_requirements": {
         "Python": 3,
@@ -7146,7 +7146,7 @@
       "id": 5,
       "name": "5",
       "capacity": 11,
-      "min_capacity": 9,
+      "min_capacity": 11,
       "veto": [],
       "programming_requirements": {
         "Python": 3,
@@ -7160,7 +7160,7 @@
       "id": 6,
       "name": "6",
       "capacity": 14,
-      "min_capacity": 5,
+      "min_capacity": 14,
       "veto": [],
       "programming_requirements": {
         "Python": 2,
@@ -7202,7 +7202,7 @@
       "id": 9,
       "name": "9",
       "capacity": 12,
-      "min_capacity": 5,
+      "min_capacity": 12,
       "veto": [],
       "programming_requirements": {
         "Python": 3,
@@ -7216,7 +7216,7 @@
       "id": 10,
       "name": "10",
       "capacity": 17,
-      "min_capacity": 13,
+      "min_capacity": 17,
       "veto": [
         {
           "last_name": "Doe",
