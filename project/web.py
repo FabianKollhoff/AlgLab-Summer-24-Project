@@ -37,11 +37,12 @@ def create_student():
             f.write(data)
 
         # comment this section if you do not want to refresh your page to input new values
-        message = """
-        alert("Vielen Dank, die Daten wurden abgesendet.");
-        """
-        js = f"<script>{message}</script>"
-        html(js)
+        #message = """
+        #alert("Vielen Dank, die Daten wurden abgesendet.");
+        #"""
+        #js = f"<script>{message}</script>"
+        #html(js)
+        st.success(f"Studierende/r {first_name} {last_name} wurde erfolgreich angelegt.")
 
     except:
         message = """alert("Bitte überprüfe deine Eingaben und korrigiere sie.");"""

@@ -21,11 +21,12 @@ class _RatingObjective:
         self._studentProjectVars = studentProjectVars
 
     def get(self):
+
         return sum(
-            self._studentProjectVars.for_each_student_and_project(
-                lambda student, project: self._studentProjectVars.x(student, project)
-                * self._studentProjectVars.rating(student, project)
-            )
+        [self._studentProjectVars.x(student, project) * self._studentProjectVars.rating(student=student, project=project)
+            for student in self._students
+             for project in self._projects
+        ]
         )
 
 
@@ -50,7 +51,7 @@ class _ProgrammingObjective:
                 lambda programming_language, student, project: self._programmingVars.x(
                     programming_language, student, project
                 )
-                * (student.programming_language_ratings[programming_language] - 1)
+                * (student.programming_language_ratings[programming_language])
             )
         )
 

@@ -51,7 +51,7 @@ class SepSolver:
         )
 
         self._ratingObjective = _RatingObjective(
-            students=self.students_min_rating,  # TODO: test with instances
+            students=self.students_min_rating,
             projects=self.projects,
             studentProjectVars=self._studentProjectVars,
         )
