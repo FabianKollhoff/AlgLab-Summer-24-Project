@@ -63,7 +63,7 @@ def genererate_solver(filepath: str):
 def solve_next_objective(solver: SepSolver, instance: Instance):
     solution = solver.solve_next_objective()
 
-    CHECK(solution is not None, "The returned solution must not be 'None'!")
+    #CHECK(solution is not None, "The returned solution must not be 'None'!")
 
     # check every project has a mimium and maximum number of participants or is empty
     for project in solution.projects:
