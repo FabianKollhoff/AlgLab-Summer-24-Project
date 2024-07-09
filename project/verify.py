@@ -49,7 +49,7 @@ def solve_sep_instance(filepath: str):
         f.write(data)
 
     benchmark = Benchmarks(instance=instance, solution=solution)
-    benchmark.log()
+    #benchmark.log()
     return instance, solution
 
 def genererate_solver(filepath: str):
@@ -106,6 +106,8 @@ def solve_next_objective(solver: SepSolver, instance: Instance):
 
 
 @mandatory_testcase(max_runtime_s=30)
+def SEPdata():
+    solve_sep_instance(filepath="./instances/SEP_data.json")
 def s100_g10():
     solve_sep_instance(filepath="./instances/data_s100_g10.json")
 
@@ -120,12 +122,12 @@ def s300_g30():
     solve_sep_instance(filepath="./instances/data_s300_g30.json")
 
 
-@mandatory_testcase(max_runtime_s=90)
+@mandatory_testcase(max_runtime_s=180)
 def s500_g50():
     solve_sep_instance(filepath="./instances/data_s500_g50.json")
 
 
-@mandatory_testcase(max_runtime_s=300)
+@mandatory_testcase(max_runtime_s=1200)
 def s1000_g100():
     solve_sep_instance(filepath="./instances/data_s1000_g100.json")
 

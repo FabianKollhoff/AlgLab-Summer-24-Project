@@ -1,4 +1,7 @@
+import json
+import os
 import re
+from pathlib import Path
 
 import streamlit as st
 from data_schema import Student
@@ -17,7 +20,7 @@ def create_student():
             last_name=last_name,
             first_name=first_name,
             matr_number=int(matr_number),
-            projects_ratings={0: int(projects_ratings)},
+            projects_ratings=projects_ratings,
             programming_language_ratings={
                 "Python": int(python),
                 "Java": int(java),
@@ -27,23 +30,26 @@ def create_student():
             },
             friends=friends,
         ).model_dump_json(indent=2)
-        with open(f"instances/data_{matr_number}.json", "w") as f:
+
+        path = Path("instances/students")
+        path.mkdir(parents=True, exist_ok=True)
+        with open(f"instances/students/data_{matr_number}.json", "w") as f:
             f.write(data)
+
+        # comment this section if you do not want to refresh your page to input new values
+        message = """
+        alert("Vielen Dank, die Daten wurden abgesendet.");
+        """
+        js = f"<script>{message}</script>"
+        html(js)
+
     except:
         message = """alert("Bitte überprüfe deine Eingaben und korrigiere sie.");"""
         js = f"<script>{message}</script>"
         html(js)
 
 
-def show_confirmation_message():
-    message = """
-   alert("Vielen Dank, die Daten wurden abgesendet.");
-   """
-    js = f"<script>{message}</script>"
-    html(js)
-    create_student()
-
-def validate_inputs(first_name, last_name, matr_number):
+def validate_inputs(first_name, last_name, matr_number, matr_number_first_friend, matr_number_second_friend):
     if not first_name or not last_name or not matr_number:
         st.error("Vorname, Nachname und Matrikelnummer sind Pflichtfelder.")
         return False
@@ -56,11 +62,13 @@ def validate_inputs(first_name, last_name, matr_number):
     if matr_number_second_friend != "" and not re.match(r"^\d{7}$", matr_number_second_friend):
             st.error("Die Matrikelnummer deines Freundes muss genau 7 Ziffern enthalten.")
             return False
-    if matr_number_first_friend == matr_number_second_friend:
+    if matr_number_first_friend == matr_number_second_friend and matr_number_first_friend != "" and matr_number_second_friend != "":
         st.error("Du musst zwei unterschiedliche Freunde angeben.")
         return False
+    if matr_number_first_friend == matr_number or matr_number_second_friend == matr_number:
+        st.error("Du darfst nicht deine eigene Matrikelnummern bei deinen Wunschgruppenpartnern angeben.")
+        return False
     return True
-
 
 st.write(
     """
@@ -96,17 +104,29 @@ with st.form("my_form"):
     st.link_button(
         "Projektseite", "https://www.ibr.cs.tu-bs.de/courses/ss24/sep-alg-tg/"
     )
-    projects_ratings = st.radio(
-        "Projekt XY (6-10 Studierende)",
-        options=["1", "2", "3", "4", "5"],
-        horizontal=True,
-    )
+
+    # list all available projects
+    projects_ratings = {}
+    directory = 'instances/projects'
+    file_names = os.listdir(directory)
+    file_names.sort()
+    for filename in file_names:
+        print(filename)
+        if filename.endswith('.json'):
+            filepath = os.path.join(directory, filename)
+            with open(filepath) as file:
+                project_data = json.load(file)
+                project_name = project_data["name"]
+                project_capacity = project_data["capacity"]
+                project_min_capacity = project_data["min_capacity"]
+                project_id = project_data["id"]
+        projects_rating = st.radio(
+            f"Projekt {project_name} ({project_min_capacity} bis {project_capacity} Studierende)",
+            options=["1", "2", "3", "4", "5"],
+            horizontal=True,
+        )
+        projects_ratings[project_id] = int(projects_rating)
 
     submitted = st.form_submit_button("Absenden")
-    if submitted and validate_inputs(first_name, last_name, matr_number):
-        st.write("Vorname:", first_name)
-        st.write("Nachname:", last_name)
-        st.write("Matrikelnummer:", matr_number)
-        st.write("Studiengang:", programme)
-        st.write("Projektinteressen:", projects_ratings)
-        show_confirmation_message()
+    if submitted and validate_inputs(first_name, last_name, matr_number, matr_number_first_friend, matr_number_second_friend):
+        create_student()

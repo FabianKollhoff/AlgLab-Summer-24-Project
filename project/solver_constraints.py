@@ -90,29 +90,6 @@ class _StudentProgrammingConstraint:
     """
     A helper class to enforce the constraints regarding the role allocation in the projects.
     """
-
-    def _enforce_student_only_is_in_one_project_and_has_one_role(self):
-        """
-        The method enforces that every student is assigned exactly one role in a single project.
-        """
-        self._programmingVars.for_each_student_and_project(
-            lambda student, project: self._model.addConstr(
-                sum(self._programmingVars.all_languages(student, project))
-                <= self._studentProjectVars.x(student, project)
-            )
-        )
-
-    def _enforce_maximum_number_roles_project_assigned(self):
-        """
-        The method enforces that there are not too many roles assigned.
-        """
-        self._programmingVars.for_each_project_with_programming_language(
-            lambda project, programming_language: self._model.addConstr(
-                sum(self._programmingVars.all_students(programming_language, project))
-                <= project.programming_requirements[programming_language]
-            )
-        )
-
     def __init__(
         self,
         students: List[Student],
@@ -129,3 +106,26 @@ class _StudentProgrammingConstraint:
 
         self._enforce_student_only_is_in_one_project_and_has_one_role()
         self._enforce_maximum_number_roles_project_assigned()
+
+
+    def _enforce_student_only_is_in_one_project_and_has_one_role(self):
+        """
+        The method enforces that every student is assigned at most one role in a single project.
+        """
+        for student in self._students:
+            for project in self._projects:
+                self._model.addConstr(
+                sum(self._programmingVars.all_languages(student, project))
+                <= self._studentProjectVars.x(student, project)
+            )
+
+    def _enforce_maximum_number_roles_project_assigned(self):
+        """
+        The method enforces that there are not too many roles assigned.
+        """
+        for project in self._projects:
+            for programming_language in project.programming_requirements:
+                if project.programming_requirements[programming_language] is not None:
+                    self._model.addConstr(
+                        sum([self._programmingVars.x(programming_language, student, project) for student in self._students])
+                        <= project.programming_requirements[programming_language])

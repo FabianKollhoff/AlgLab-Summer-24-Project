@@ -10,22 +10,20 @@ class Benchmarks(BaseModel):
     solution: Solution
 
     def log(self):
-        # logger = logging.getLogger('logger')
+        #logger = logging.getLogger('logger')
 
-        # self.log_avg_util()
+        #self.log_avg_util()
 
-        # self.log_proj_util()
+        #self.log_proj_util()
 
-        # self.log_median_group_size()
+        #self.log_median_group_size()
 
         #self.log_avg_proj_rating()
 
-        # self.log_avg_rating()
+        #self.log_avg_rating()
 
-        # self.log_rating_sums()
-        # TODO: log the number of partner requests that were fulfilled
+        #self.log_rating_sums()
 
-        # TODO: log graph of friend relations that were (not) fulfilled
         #self.log_friend_graph()
         #self.log_programming_requirements()
         self.log_opt_sizes()
@@ -34,14 +32,13 @@ class Benchmarks(BaseModel):
         # plot bar chart for student ratings in solution
         ratings = [1, 2, 3, 4, 5]
         rating_sums = {rat: 0 for rat in ratings}
-        for proj in self.solution.projects:
-            for stu in self.solution.projects[proj]:
-                rating_sums[stu.projects_ratings[proj]] += 1
+        for project in self.solution.projects:
+            for student in self.solution.projects[project]:
+                rating_sums[student.projects_ratings[project]] += 1
 
         x = np.array(ratings)
         y = np.array(list(rating_sums.values()))
 
-        # get current figure
         return x,y
 
     def log_avg_rating(self):
@@ -55,6 +52,8 @@ class Benchmarks(BaseModel):
             )
             / num_students
         )
+
+        return avg_rating_per_student
         # logger.info('The average rating of students in solution is: %f', avg_rating_per_student)
 
     def log_avg_proj_rating(self):
@@ -75,30 +74,32 @@ class Benchmarks(BaseModel):
         y = np.array(ratings)
         return x,y
 
-
     def log_median_group_size(self):
         # log the median group size
         group_sizes = [
             len(self.solution.projects[proj]) for proj in self.solution.projects
         ]
         group_sizes.sort()
+        return group_sizes[round(len(group_sizes) / 2)]
         # logger.info('The median group size in the solution is: %i', group_sizes[round(len(group_sizes) / 2)])
 
     def log_proj_util(self):
         # log the utilization of every individual project
         utils = []
-        for proj in self.solution.projects:
+        project_names = []
+
+        for project in self.solution.projects:
             # logger.info('The utilization of project %s is: %f', self.instance.projects[proj].name, len(self.solution.projects[proj]) / self.instance.projects[proj].capacity)
             print(
-                f"The utilization of project {self.instance.projects[proj].name} is: {len(self.solution.projects[proj]) / self.instance.projects[proj].capacity}"
+                f"The utilization of project {self.instance.projects[project].name} is: {len(self.solution.projects[project]) / self.instance.projects[project].capacity}"
             )
             utils.append(
-                len(self.solution.projects[proj])
-                / self.instance.projects[proj].capacity
+                len(self.solution.projects[project])
+                / self.instance.projects[project].capacity
             )
+            project_names.append(self.instance.projects[project].name)
         # create plot
-        projs = list(self.solution.projects)
-        x = np.array(projs)
+        x = np.array(project_names)
         y = np.array(utils)
         return x,y
 
@@ -134,28 +135,35 @@ class Benchmarks(BaseModel):
         nx.draw_networkx(
             graph, pos=layout, edge_color=colors, node_size=15, with_labels=False
         )
-        fig, ax = plt.subplots()
-        ax.title(f"Friend graph. G:{num_greens} R:{num_reds}")
-        ax.show()
-        return ax.gcf()
+        plt.title(f"Friend graph. G:{num_greens} R:{num_reds}")
+        plt.show()
+        return plt.gcf()
 
     def log_programming_requirements(self):
         # in solution: For each project log for each programming language % of how students that meet requirement
-        languages = list(self.instance.students[0].programming_language_ratings.keys())
-        for proj in self.solution.projects:
-            percentages = []
+        project_requirements_fullfilled_precentage = []
+        project_names = []
+        for project_id in self.solution.projects:
+            project = self.instance.projects[project_id]
+            project_requirements_count = 0.0
+            fullfilled_programming_requirements = 0.0
+            for programming_language in project.programming_requirements:
+                project_requirements_count += project.programming_requirements[programming_language]
+            if project_requirements_count == 0:
+                project_requirements_fullfilled_precentage.append(1)
+                project_names.append(project.name)
+                continue
 
-            for lang, req in self.instance.projects[proj].programming_requirements.items():
-                # get number of students with language skill > required skill for this lang
-                num_stu = sum(1 for stu in self.solution.projects[proj] if stu.programming_language_ratings[lang] > req)
-                percentages.append(num_stu/len(self.solution.projects[proj]))
-            x = list(range(len(languages)))
-            barplot = plt.bar(x, percentages, width=0.5, color='b', align='center')
-            plt.bar_label(barplot, labels=[str(int(el*100)) + "%" for el in percentages], label_type="edge")
-            plt.title(" % of students that meet the programming requirement")
-            plt.xticks(x, languages)
-            plt.show()
-        return plt.gcf()
+            for student in self.solution.projects[project_id]:
+                fullfilled_programming_requirements += (self.solution.roles[student.matr_number]/4)
+
+            project_requirements_fullfilled_precentage.append(fullfilled_programming_requirements/project_requirements_count)
+            project_names.append(project.name)
+
+            # create plot
+        x = np.array(project_names)
+        y = np.array(project_requirements_fullfilled_precentage)
+        return x,y
     
     def log_opt_sizes(self):
         #for each project in solution: plot size in solution and opt_size

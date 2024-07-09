@@ -24,6 +24,14 @@ class Student(BaseModel):
             if rating < 1 or rating > 5:
                 raise ValueError("Project ratings must be between 1 and 5.")
         return v
+    
+    @field_validator("programming_language_ratings")
+    @classmethod
+    def check_programming_language_ratings(cls, v) -> Dict[int, int]:
+        for rating in v.values():
+            if rating < 1 or rating > 4:
+                raise ValueError("Programming ratings must be between 1 and 4.")
+        return v
 
     @field_validator("friends")
     @classmethod
@@ -127,6 +135,7 @@ class Instance(BaseModel):
 
 class Solution(BaseModel):
     projects: Dict[int, List[Student]]
+    roles:    Dict[int, int]
 
     def get_proj_for_student(self, student: Student):
         for proj in self.projects:
