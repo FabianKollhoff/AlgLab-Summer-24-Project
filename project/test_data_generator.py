@@ -69,20 +69,30 @@ class Generator:
         return (capacity, min_capacity)
 
     def genererateProgrammingRequirements(self):
-        return {
-            "Python": random.randint(0, 3),
-            "Java": random.randint(0, 3),
-            "C/C++": random.randint(0, 3),
-            "PHP": random.randint(0, 3),
-            "SQL": random.randint(0, 3),
-        }
+        max_requirements = self.capacity
+        requirements = {}
+        rating = random.randint(0, min(max_requirements, 4))
+        requirements.update({"Python": rating})
+        max_requirements -= rating
+        rating = random.randint(0, min(max_requirements, 4))
+        requirements.update({"Java": rating})
+        max_requirements -= rating
+        rating = random.randint(0, min(max_requirements, 4))
+        requirements.update({"C/C++": rating})
+        max_requirements -= rating
+        rating = random.randint(0, min(max_requirements, 4))
+        requirements.update({"PHP": rating})
+        max_requirements -= rating
+        rating = random.randint(0, min(max_requirements, 4))
+        requirements.update({"SQL": rating})
+        return requirements
 
     def generateProject(self, i):
-        capacity, min_capacity = self.randomProjectCapacity()
+        self.capacity, min_capacity = self.randomProjectCapacity()
         return Project(
             id=i,
             name=str(i),
-            capacity=capacity,
+            capacity=self.capacity,
             min_capacity=min_capacity,
             veto=[],
             programming_requirements=self.genererateProgrammingRequirements(),

@@ -136,7 +136,7 @@ class _OptSizeOjective:
     def get(self):
         return self._maximum
         #return sum(el * el for el in self.deviations)
-    
+
     def _enforce_every_project_minimize_deviation(self, limit):
         """
         

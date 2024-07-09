@@ -38,17 +38,17 @@ def solve_instance(num):
 
     solution = verify.solve_next_objective(solver=solver,instance=instance)
     num.value = 0.25
-    if solution == None:
+    if solution is None:
         num.value = -1
         return solution, instance
     solution = verify.solve_next_objective(solver=solver,instance=instance)
     num.value = 0.5
-    if solution == None:
+    if solution is None:
         num.value = -1
         return solution, instance
     solution = verify.solve_next_objective(solver=solver,instance=instance)
     num.value = 0.75
-    if solution == None:
+    if solution is None:
         num.value = -1
         return solution, instance
     solution = verify.solve_next_objective(solver=solver,instance=instance)
@@ -86,7 +86,7 @@ if authentication_status:
             progress_text = ""
 
             if num.value == 0:
-                progress_text = "project rating objective"      #TODO: add optimal group size objective
+                progress_text = "project rating objective"
             elif num.value == 0.25:
                 progress_text = "programming rating objective"
             elif num.value == 0.5:
@@ -97,7 +97,7 @@ if authentication_status:
                 progress_text = "finished"
             timer.metric("Elapsed time:", F"{round((end-start)/1000000000, 3)}")
             my_bar.progress(num.value, text=progress_text)
-        
+
         if num.value == -1:
             st.write("!!! INFEASABLE SOLUTION !!!")
         else:
