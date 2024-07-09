@@ -163,12 +163,18 @@ class Benchmarks(BaseModel):
         projs = list(self.solution.projects)
         x = np.arange(len(projs))
         y = np.array([self.instance.projects[proj].opt_size for proj in self.instance.projects])
-        bar1 = plt.bar(x - 0.2, y, width=0.4, color="r", label='Optimal Sizes')
+        bar1 = plt.bar(x - 0.2, y, width=0.2, color="r", label='Optimal Sizes')
         plt.bar_label(bar1, labels=y, label_type="edge")
+
         y = np.array([len(self.solution.projects[proj]) for proj in self.instance.projects])
-        bar2 = plt.bar(x + 0.2, y, width=0.4, color="b", label='actual sizes')
+        bar2 = plt.bar(x, y, width=0.2, color="b", label='actual sizes')
         plt.bar_label(bar2, labels=y, label_type="edge")
-        plt.title("Project sizes in solution vs optimal size")
+
+        y = np.array([self.instance.projects[proj].capacity for proj in self.instance.projects])
+        bar3 = plt.bar(x + 0.2, y, width=0.2, color="g", label='capacity')
+        plt.bar_label(bar3, labels=y, label_type="edge")
+        
+        plt.title("Project sizes in solution vs optimal size vs capacity")
         plt.xticks(x, projs)
         plt.xlabel("Projects")
         plt.ylabel("Number of students")

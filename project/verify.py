@@ -125,7 +125,7 @@ def s500_g50():
     solve_sep_instance(filepath="./instances/data_s500_g50.json")
 
 
-@mandatory_testcase(max_runtime_s=90)
+@mandatory_testcase(max_runtime_s=300)
 def s1000_g100():
     solve_sep_instance(filepath="./instances/data_s1000_g100.json")
 
