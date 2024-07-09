@@ -30,7 +30,7 @@ authenticator = stauth.Authenticate(
 name, authentication_status, username = authenticator.login()
 
 def solve_instance(num):
-    solver, instance = verify.genererate_solver("./instances/data_s100_g10.json")
+    solver, instance = verify.genererate_solver("./instances/data_s1000_g100.json")
 
     # manually generated form data
     #combine_data()  # generate instance from inputs
