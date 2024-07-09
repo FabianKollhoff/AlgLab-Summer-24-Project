@@ -102,7 +102,7 @@ if authentication_status:
                 my_bar.progress(1, text=progress_text)
 
         if num.value == -1:
-            st.write("!!! INFEASABLE SOLUTION !!!")
+            st.write("!!! INFEASIBLE SOLUTION !!!")
         else:
             with open("solution/solution_of_100_1000.json") as f:
             #with open("solution/solution_of_sep.json") as f:
