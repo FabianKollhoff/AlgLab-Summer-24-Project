@@ -37,9 +37,17 @@ def solve_instance(num):
     #solver, instance = verify.genererate_solver("./instances/SEP_data.json")
 
     solution = verify.solve_next_objective(solver=solver,instance=instance)
-    num.value = 0.6
+    num.value = 0.25
+    if solution == None:
+        return solution, instance
     solution = verify.solve_next_objective(solver=solver,instance=instance)
-    num.value = 0.9
+    num.value = 0.5
+    if solution == None:
+        return solution, instance
+    solution = verify.solve_next_objective(solver=solver,instance=instance)
+    num.value = 0.75
+    if solution == None:
+        return solution, instance
     solution = verify.solve_next_objective(solver=solver,instance=instance)
     num.value = 1
 
@@ -75,17 +83,17 @@ if authentication_status:
             progress_text = ""
             if num.value == 0:
                 progress_text = "project rating objective"      #TODO: add optimal group size objective
-            elif num.value == 0.33:
+            elif num.value == 0.25:
                 progress_text = "programming rating objective"
-            elif num.value == 0.66:
+            elif num.value == 0.5:
                 progress_text = "friends rating objective"
+            elif num.value == 0.75:
+                progress_text = "optimal group size objective"
             else:
                 progress_text = "finished"
             timer.metric("Elapsed time:", F"{round((end-start)/1000000000, 3)}")
             my_bar.progress(num.value, text=progress_text)
-
-
-
+        
         with open("solution/solution_of_100_1000.json") as f:
         #with open("solution/solution_of_sep.json") as f:
             solution: Solution = Solution.model_validate_json(f.read())

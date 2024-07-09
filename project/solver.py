@@ -98,15 +98,10 @@ class SepSolver:
         for project in self.projects:
             for student in self.students:
                 if self._studentProjectVars.x(student, project).X > 0.5:
-                    print(student.matr_number)
-                    print(" ")
                     for programming_language in project.programming_requirements:
-                        print(programming_language)
-                        print(self._programmingVars.x(programming_language=programming_language, student=student, project=project).X)
                         if self._programmingVars.x(programming_language=programming_language, student=student, project=project).X > 0.5:
                             roles[student.matr_number] = student.programming_language_ratings[programming_language]
                     projects[project.id].append(student)
-                    print("\n")
         return Solution(projects=projects, roles=roles)
 
     def solve(self) -> Solution:
@@ -179,16 +174,30 @@ class SepSolver:
 
             self._model.optimize()
             if self._model.status == GRB.OPTIMAL:
+                self.current_best_solution = self.get_current_solution()
                 self._model.addConstr(
                     self._programmingObjective.get()
-                    >= self._model.getObjective().getValue() * 0.99
+                    >= self._model.getObjective().getValue() * 1
                 )
         elif self.current_objective == 2:
             self._model.setObjective(
                 self._friendsObjective.get(),
                 gp.GRB.MAXIMIZE,
             )
+            self._model.optimize()
 
+            if self._model.status == GRB.OPTIMAL:
+                self.current_best_solution = self.get_current_solution()
+                self._model.addConstr(
+                self._friendsObjective.get()
+                    >= self._model.getObjective().getValue() * 0.99
+                )
+                self._model.optimize()
+        elif self.current_objective == 3:
+            self._model.setObjective(
+                self._optSizeObjective.get(),
+                gp.GRB.MINIMIZE,
+            )
             self._model.optimize()
             if self._model.status == GRB.OPTIMAL:
                 self.current_best_solution = self.get_current_solution()

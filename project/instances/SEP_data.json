@@ -1,0 +1,204 @@
+{
+    "students": [
+        {
+            "last_name": "Doe",
+            "first_name": "Jollie",
+            "matr_number": 1234569,
+            "projects_ratings": {
+                "0": 1,
+                "1": 1
+            },
+            "programming_language_ratings": {
+                "Python": 3,
+                "Java": 4,
+                "C/C++": 1,
+                "SQL": 1,
+                "PHP": 1
+            },
+            "friends": []
+        },
+        {
+            "last_name": "Doe",
+            "first_name": "Joe",
+            "matr_number": 1234563,
+            "projects_ratings": {
+                "0": 1,
+                "1": 1
+            },
+            "programming_language_ratings": {
+                "Python": 3,
+                "Java": 2,
+                "C/C++": 1,
+                "SQL": 1,
+                "PHP": 1
+            },
+            "friends": []
+        },
+        {
+            "last_name": "Doe",
+            "first_name": "Joe",
+            "matr_number": 1234562,
+            "projects_ratings": {
+                "0": 1,
+                "1": 1
+            },
+            "programming_language_ratings": {
+                "Python": 3,
+                "Java": 1,
+                "C/C++": 1,
+                "SQL": 1,
+                "PHP": 1
+            },
+            "friends": []
+        },
+        {
+            "last_name": "Doe",
+            "first_name": "Jollie",
+            "matr_number": 1234566,
+            "projects_ratings": {
+                "0": 1,
+                "1": 1
+            },
+            "programming_language_ratings": {
+                "Python": 1,
+                "Java": 4,
+                "C/C++": 1,
+                "SQL": 1,
+                "PHP": 1
+            },
+            "friends": []
+        },
+        {
+            "last_name": "Doe",
+            "first_name": "Jollie",
+            "matr_number": 1234565,
+            "projects_ratings": {
+                "0": 1,
+                "1": 1
+            },
+            "programming_language_ratings": {
+                "Python": 1,
+                "Java": 3,
+                "C/C++": 1,
+                "SQL": 1,
+                "PHP": 1
+            },
+            "friends": []
+        },
+        {
+            "last_name": "Doe",
+            "first_name": "Jollie",
+            "matr_number": 1234567,
+            "projects_ratings": {
+                "0": 1,
+                "1": 1
+            },
+            "programming_language_ratings": {
+                "Python": 3,
+                "Java": 3,
+                "C/C++": 1,
+                "SQL": 1,
+                "PHP": 1
+            },
+            "friends": []
+        },
+        {
+            "last_name": "Doe",
+            "first_name": "Jill",
+            "matr_number": 1234561,
+            "projects_ratings": {
+                "0": 1,
+                "1": 1
+            },
+            "programming_language_ratings": {
+                "Python": 2,
+                "Java": 2,
+                "C/C++": 1,
+                "SQL": 1,
+                "PHP": 1
+            },
+            "friends": []
+        },
+        {
+            "last_name": "Doe",
+            "first_name": "Joe",
+            "matr_number": 1234560,
+            "projects_ratings": {
+                "0": 1,
+                "1": 1
+            },
+            "programming_language_ratings": {
+                "Python": 4,
+                "Java": 2,
+                "C/C++": 1,
+                "SQL": 1,
+                "PHP": 1
+            },
+            "friends": []
+        },
+        {
+            "last_name": "Doe",
+            "first_name": "Joe",
+            "matr_number": 1234564,
+            "projects_ratings": {
+                "0": 1,
+                "1": 1
+            },
+            "programming_language_ratings": {
+                "Python": 4,
+                "Java": 2,
+                "C/C++": 1,
+                "SQL": 1,
+                "PHP": 1
+            },
+            "friends": []
+        },
+        {
+            "last_name": "Doe",
+            "first_name": "Jollie",
+            "matr_number": 1234568,
+            "projects_ratings": {
+                "0": 1,
+                "1": 1
+            },
+            "programming_language_ratings": {
+                "Python": 1,
+                "Java": 4,
+                "C/C++": 1,
+                "SQL": 1,
+                "PHP": 1
+            },
+            "friends": []
+        }
+    ],
+    "projects": {
+        "1": {
+            "id": 1,
+            "name": "Java",
+            "capacity": 5,
+            "min_capacity": 5,
+            "veto": [],
+            "programming_requirements": {
+                "Python": 1,
+                "Java": 4,
+                "C/C++": 1,
+                "SQL": 1,
+                "PHP": 1
+            }
+        },
+        "0": {
+            "id": 0,
+            "name": "Python",
+            "capacity": 5,
+            "min_capacity": 5,
+            "veto": [],
+            "programming_requirements": {
+                "Python": 3,
+                "Java": 1,
+                "C/C++": 1,
+                "SQL": 1,
+                "PHP": 1
+            }
+        }
+    }
+}
