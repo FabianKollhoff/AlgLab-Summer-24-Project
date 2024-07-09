@@ -90,3 +90,56 @@ class _FriendsObjective:
         return sum(
             relation for relation in self.relations
         )
+
+class _OptSizeOjective:
+    """
+    A helper class to calculate the objective concerning the optimal size of the projects.
+    """
+
+    def __init__(
+        self,
+        model,
+        students: List[Student],
+        projects: List[Project],
+        studentProjectVars: _StudentProjectVars,
+    ):
+        self._students = students
+        self._projects = projects
+        self._studentProjectVars = studentProjectVars
+        self._model = model
+
+        self.deviations = []
+        self.abs_deviations = []
+        for proj in self._projects:
+            deviation = model.addVar(
+                            vtype=gp.GRB.INTEGER, name="deviation_of_"
+                        )
+
+            opt_size = int((proj.capacity + proj.min_capacity) / 2)
+            model.addConstr(
+                deviation == sum(self._studentProjectVars.all_students_with_project(project=proj)) - opt_size
+                )
+            abs_deviation = model.addVar(vtype=gp.GRB.INTEGER, name="abs_deviation")
+            model.addConstr(abs_deviation == gp.abs_(deviation))
+            self.deviations.append(deviation)
+            self.abs_deviations.append(abs_deviation)
+        self._maximum = model.addVar(vtype=gp.GRB.INTEGER, name="max")
+        for dev in self.abs_deviations:
+            #add constraints to make sure the maximum is >= to all deviations
+            model.addConstr(self._maximum >= dev) 
+
+    # try to minimize the sum(deviation of every project from its optimal size)
+    # try to minimize the single maximum deviation from a projects optimum. So minimize _maximum
+    # maximum = max(deviations). Objective: minimize(maximum)
+    # TODO: make it not quadratic ???
+
+    def get(self):
+        return self._maximum
+        #return sum(el * el for el in self.deviations)
+    
+    def _enforce_every_project_minimize_deviation(self, limit):
+        """
+        
+        """
+        for dev in self.deviations:
+            self._model.addConstr(dev <= limit)

@@ -7,7 +7,7 @@ from solver_constraints import (
     _ProjectParticipationConstraint,
     _StudentProgrammingConstraint,
 )
-from solver_objectives import _FriendsObjective, _ProgrammingObjective, _RatingObjective
+from solver_objectives import _FriendsObjective, _ProgrammingObjective, _RatingObjective, _OptSizeOjective
 from solver_vars import _EmptyProjectVars, _ProgrammingVars, _StudentProjectVars
 
 
@@ -66,6 +66,12 @@ class SepSolver:
             projects=self.projects,
             studentProjectVars=self._studentProjectVars,
         )
+        self._optSizeObjective = _OptSizeOjective(
+            model=self._model,
+            students=self.students,
+            projects=self.projects,
+            studentProjectVars=self._studentProjectVars
+        )
 
         self.current_best_solution = None
 
@@ -110,6 +116,7 @@ class SepSolver:
         )
 
         self._model.optimize()
+
         if self._model.status == GRB.OPTIMAL:
             self._model.addConstr(
                 self._ratingObjective.get()
@@ -130,7 +137,18 @@ class SepSolver:
                 self._friendsObjective.get(),
                 gp.GRB.MAXIMIZE,
             )
-
+        
+        self._model.optimize()
+        if self._model.status == GRB.OPTIMAL:
+            self._model.addConstr(
+                self._friendsObjective.get()
+                >= self._model.getObjective().getValue() * 0.99
+            )
+            self._model.setObjective(
+                self._optSizeObjective.get(),
+                gp.GRB.MINIMIZE,
+            )
+            
         self._model.optimize()
         if self._model.status == GRB.OPTIMAL:
             self.current_best_solution = self.get_current_solution()

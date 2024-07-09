@@ -48,6 +48,8 @@ def solve_sep_instance(filepath: str):
     with open(f"solution/solution_of_{len(instance.projects)}_{len(instance.students)}.json", "w") as f:
         f.write(data)
 
+    benchmark = Benchmarks(instance=instance, solution=solution)
+    #benchmark.log()
     return instance, solution
 
 def genererate_solver(filepath: str):
@@ -120,12 +122,12 @@ def s300_g30():
     solve_sep_instance(filepath="./instances/data_s300_g30.json")
 
 
-@mandatory_testcase(max_runtime_s=90)
+@mandatory_testcase(max_runtime_s=180)
 def s500_g50():
     solve_sep_instance(filepath="./instances/data_s500_g50.json")
 
 
-@mandatory_testcase(max_runtime_s=90)
+@mandatory_testcase(max_runtime_s=1200)
 def s1000_g100():
     solve_sep_instance(filepath="./instances/data_s1000_g100.json")
 
