@@ -1,0 +1,14 @@
+{
+  "id": 0,
+  "name": "Testveto",
+  "capacity": 5,
+  "min_capacity": 5,
+  "veto": [],
+  "programming_requirements": {
+    "Python": 1,
+    "Java": 1,
+    "C/C++": 1,
+    "SQL": 1,
+    "PHP": 1
+  }
+}

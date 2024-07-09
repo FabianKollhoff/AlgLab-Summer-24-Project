@@ -1,0 +1,17 @@
+{
+  "last_name": "Doe",
+  "first_name": "Joe",
+  "matr_number": 1234561,
+  "projects_ratings": {
+    "0": 4,
+    "1": 1
+  },
+  "programming_language_ratings": {
+    "Python": 1,
+    "Java": 1,
+    "C/C++": 1,
+    "SQL": 1,
+    "PHP": 1
+  },
+  "friends": []
+}

@@ -10,24 +10,23 @@ class Benchmarks(BaseModel):
     solution: Solution
 
     def log(self):
-        # logger = logging.getLogger('logger')
+        #logger = logging.getLogger('logger')
 
-        # self.log_avg_util()
+        #self.log_avg_util()
 
-        # self.log_proj_util()
+        #self.log_proj_util()
 
-        # self.log_median_group_size()
+        #self.log_median_group_size()
 
         #self.log_avg_proj_rating()
 
-        # self.log_avg_rating()
+        #self.log_avg_rating()
 
-        # self.log_rating_sums()
-        # TODO: log the number of partner requests that were fulfilled
+        #self.log_rating_sums()
 
-        # TODO: log graph of friend relations that were (not) fulfilled
         #self.log_friend_graph()
-        self.log_programming_requirements()
+        #self.log_programming_requirements()
+        self.log_opt_sizes()
 
     def log_rating_sums(self):
         # plot bar chart for student ratings in solution
@@ -136,10 +135,9 @@ class Benchmarks(BaseModel):
         nx.draw_networkx(
             graph, pos=layout, edge_color=colors, node_size=15, with_labels=False
         )
-        fig, ax = plt.subplots()
-        ax.title(f"Friend graph. G:{num_greens} R:{num_reds}")
-        ax.show()
-        return ax.gcf()
+        plt.title(f"Friend graph. G:{num_greens} R:{num_reds}")
+        plt.show()
+        return plt.gcf()
 
     def log_programming_requirements(self):
         # in solution: For each project log for each programming language % of how students that meet requirement
@@ -161,11 +159,39 @@ class Benchmarks(BaseModel):
 
             project_requirements_fullfilled_precentage.append(fullfilled_programming_requirements/project_requirements_count)
             project_names.append(project.name)
-            
+
             # create plot
         x = np.array(project_names)
         y = np.array(project_requirements_fullfilled_precentage)
         return x,y
+    
+    def log_opt_sizes(self):
+        #for each project in solution: plot size in solution and opt_size
+        # create plot
+        projs = list(self.solution.projects)
+        x = np.arange(len(projs))
+        y = np.array([int((self.instance.projects[proj].capacity + self.instance.projects[proj].min_capacity)/2)
+                       for proj in self.instance.projects])
+        bar1 = plt.bar(x - 0.2, y, width=0.2, color="r", label='Optimal Sizes')
+        plt.bar_label(bar1, labels=y, label_type="edge")
+
+        y = np.array([len(self.solution.projects[proj]) for proj in self.instance.projects])
+        bar2 = plt.bar(x, y, width=0.2, color="b", label='actual sizes')
+        plt.bar_label(bar2, labels=y, label_type="edge")
+
+        y = np.array([self.instance.projects[proj].capacity for proj in self.instance.projects])
+        bar3 = plt.bar(x + 0.2, y, width=0.2, color="g", label='capacity')
+        plt.bar_label(bar3, labels=y, label_type="edge")
+        
+        plt.title("Project sizes in solution vs optimal size vs capacity")
+        plt.xticks(x, projs)
+        plt.xlabel("Projects")
+        plt.ylabel("Number of students")
+        plt.legend()
+        plt.show()
+        return x,y
+
+
 
 
 if __name__ == "__main__":
