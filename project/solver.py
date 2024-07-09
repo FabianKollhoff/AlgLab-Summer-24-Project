@@ -107,9 +107,9 @@ class SepSolver:
             self._ratingObjective.get(),
             gp.GRB.MAXIMIZE,
         )
-        #try using a callback for the optsize objective. 
+
         self._model.optimize()
-        #self._optSizeObjective._enforce_every_project_minimize_deviation(limit=3)
+
         if self._model.status == GRB.OPTIMAL:
             self._model.addConstr(
                 self._ratingObjective.get()
@@ -124,7 +124,7 @@ class SepSolver:
         if self._model.status == GRB.OPTIMAL:
             self._model.addConstr(
                 self._programmingObjective.get()
-                >= self._model.getObjective().getValue() * 0.9
+                >= self._model.getObjective().getValue() * 0.99
             )
             self._model.setObjective(
                 self._friendsObjective.get(),
@@ -141,8 +141,7 @@ class SepSolver:
                 self._optSizeObjective.get(),
                 gp.GRB.MINIMIZE,
             )
-        #try iteratively reducing maximum deviation
-        #self._optSizeObjective._enforce_every_project_minimize_deviation(limit=5)
+            
         self._model.optimize()
         if self._model.status == GRB.OPTIMAL:
             self.current_best_solution = self.get_current_solution()

@@ -37,7 +37,6 @@ class Project(BaseModel):
     id: int = Field(ge=0)
     name: str
     capacity: int
-    opt_size: int
     min_capacity: int
     veto: List[Student]
     programming_requirements: Dict[str, int]
@@ -50,13 +49,6 @@ class Project(BaseModel):
     def check_max_capacity(cls, v: int) -> int:
         if v < 5:
             raise ValueError("Maximum project capacity is too small.")
-        return v
-    
-    @field_validator("opt_size")
-    @classmethod
-    def check_opt_size(cls, v: int) -> int:
-        if v < 5:
-            raise ValueError("Optimal group size is too small.")
         return v
 
     @field_validator("min_capacity")

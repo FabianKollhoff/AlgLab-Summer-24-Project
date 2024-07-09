@@ -162,7 +162,8 @@ class Benchmarks(BaseModel):
         # create plot
         projs = list(self.solution.projects)
         x = np.arange(len(projs))
-        y = np.array([self.instance.projects[proj].opt_size for proj in self.instance.projects])
+        y = np.array([int((self.instance.projects[proj].capacity + self.instance.projects[proj].min_capacity)/2)
+                       for proj in self.instance.projects])
         bar1 = plt.bar(x - 0.2, y, width=0.2, color="r", label='Optimal Sizes')
         plt.bar_label(bar1, labels=y, label_type="edge")
 
