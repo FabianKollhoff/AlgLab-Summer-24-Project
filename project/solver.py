@@ -94,9 +94,6 @@ class SepSolver:
             if self.check_minimum_positive_ratings(student) is True
         ]
 
-    def get_project_rating(self, student: Student, project_id: int) -> int:
-        return student.projects_ratings[project_id]
-
     def get_current_solution(self):
         projects = {project.id: [] for project in self.projects}
         roles = {student.matr_number: 0 for student in self.students}

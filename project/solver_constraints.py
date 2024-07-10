@@ -58,13 +58,6 @@ class _ProjectParticipationConstraint:
                 == 0
             )
 
-    def _enforce_maintaining_high_rating(self, student: Student, rating: int):
-        """ """
-        for project in self._projects:
-            if student.projects_ratings[project.id] < rating:
-                self._model.addConstr(
-                    sum([self._studentProjectVars.x(student, project)]) == 0
-                )
 
     def __init__(
         self,

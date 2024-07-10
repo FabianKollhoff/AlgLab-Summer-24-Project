@@ -126,20 +126,11 @@ class _OptSizeOjective:
         self._maximum = model.addVar(vtype=gp.GRB.INTEGER, name="max")
         for dev in self.abs_deviations:
             #add constraints to make sure the maximum is >= to all deviations
-            model.addConstr(self._maximum >= dev) 
+            model.addConstr(self._maximum >= dev)
 
     # try to minimize the sum(deviation of every project from its optimal size)
     # try to minimize the single maximum deviation from a projects optimum. So minimize _maximum
     # maximum = max(deviations). Objective: minimize(maximum)
-    # TODO: make it not quadratic ???
 
     def get(self):
         return self._maximum
-        #return sum(el * el for el in self.deviations)
-
-    def _enforce_every_project_minimize_deviation(self, limit):
-        """
-        
-        """
-        for dev in self.deviations:
-            self._model.addConstr(dev <= limit)

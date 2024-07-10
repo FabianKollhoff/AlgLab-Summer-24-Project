@@ -30,7 +30,7 @@ authenticator = stauth.Authenticate(
 name, authentication_status, username = authenticator.login()
 
 def solve_instance(num):
-    solver, instance = verify.genererate_solver("./instances/data_s1000_g100.json")
+    solver, instance = verify.genererate_solver("./instances/data_s500_g50.json")
 
     # manually generated form data
     #combine_data()  # generate instance from inputs
@@ -104,11 +104,11 @@ if authentication_status:
         if num.value == -1:
             st.write("!!! INFEASIBLE SOLUTION !!!")
         else:
-            with open("solution/solution_of_100_1000.json") as f:
+            with open("solution/solution_of_50_500.json") as f:
             #with open("solution/solution_of_sep.json") as f:
                 solution: Solution = Solution.model_validate_json(f.read())
 
-            with open("./instances/data_s1000_g100.json") as f:
+            with open("./instances/data_s500_g50.json") as f:
             #with open("./instances/SEP_data.json") as f:
                 instance: Instance = Instance.model_validate_json(f.read())
             benchmark = Benchmarks(solution=solution, instance=instance)
