@@ -101,12 +101,12 @@ if authentication_status:
         capacity = st.text_input("Maximale Projektkapazität")
         min_capacity = st.text_input("Mindestteilnehmerzahl")
         veto = st.text_input("Matrikelnummer der Studierenden, die ausgeschlossen werden sollen") # currently atmost one veto possible
-        st.write("Notwendige Programmierkenntnisse für die erfolgreiche Teilnahme am Projekt. 1: keine Kenntnisse, 2: Anfängerniveau, 3: fortgeschritten, 4: Expertenniveau")
-        python = st.radio("Python", options=["1", "2", "3", "4"], horizontal=True)
-        java = st.radio("Java", options=["1", "2", "3", "4"], horizontal=True)
-        c_cpp = st.radio("C/C++", options=["1", "2", "3", "4"], horizontal=True)
-        sql = st.radio("SQL", options=["1", "2", "3", "4"], horizontal=True)
-        php = st.radio("PHP", options=["1", "2", "3", "4"], horizontal=True)
+        st.write("Anzahl der Programmierer in den folgenden Sprachen für die erfolgreiche Durchführung des Projektes.")
+        python = st.radio("Python", options=["0", "1", "2", "3"], horizontal=True)
+        java = st.radio("Java", options=["0", "1", "2", "3"], horizontal=True)
+        c_cpp = st.radio("C/C++", options=["0", "1", "2", "3"], horizontal=True)
+        sql = st.radio("SQL", options=["0", "1", "2", "3"], horizontal=True)
+        php = st.radio("PHP", options=["0", "1", "2", "3"], horizontal=True)
         submit = st.form_submit_button("Projekt erstellen")
 
         if submit and validate_inputs(name, capacity, min_capacity):
